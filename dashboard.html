@@ -1241,19 +1241,8 @@
         }
 
         async function initLogin() {
-            try {
-                const response = await fetch('/api/login/status');
-                const data = await response.json();
-                
-                if (data.feishu_enabled) {
-                    showFeishuLogin();
-                    await refreshQRCode();
-                } else {
-                    showPasswordLogin();
-                }
-            } catch (e) {
-                showPasswordLogin();
-            }
+            // 默认显示密码登录（飞书扫码备用）
+            showPasswordLogin();
         }
 
         async function refreshQRCode() {
