@@ -272,7 +272,6 @@ def verify_token(request: Request):
         return None
     token = auth_header[7:]
     expiry = sessions.get(token)
-    logger.info(f"verify_token: token={token[:10]}..., found={token in sessions}, expiry={expiry}, sessions_count={len(sessions)}")
     if expiry and expiry > datetime.now():
         return token
     return None
