@@ -346,7 +346,6 @@ async def feishu_callback(request: Request):
         return JSONResponse({"success": False, "message": "Feishu not enabled"})
     
     try:
-        # 飞书回调会带code参数
         code = request.query_params.get("code")
         state = request.query_params.get("state")
         
@@ -356,11 +355,15 @@ async def feishu_callback(request: Request):
         session_token = verify_auth_code(code, state)
         if session_token:
             sessions[session_token] = datetime.now() + timedelta(days=7)
-            # 返回成功页面，前端会处理
-            return {"success": True, "token": session_token}
+            # 重定向回首页并携带token
+            from fastapi.responses import RedirectResponse
+            response = RedirectResponse(url="/?token=" + session_token)
+            response.set_cookie(key="authToken", value=session_token, httponly=True, max_age=60*60*24*7)
+            return response
         
         return {"success": False, "message": "Invalid code"}
     except Exception as e:
+        logger.error(f"Feishu callback error: {e}")
         return {"success": False, "message": str(e)}
 
 

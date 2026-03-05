@@ -1232,17 +1232,39 @@
         let currentQRState = null;
         let qrPollingInterval = null;
 
+        // Check URL for token (from Feishu callback)
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlToken = urlParams.get('token');
+        if (urlToken) {
+            authToken = urlToken;
+            localStorage.setItem('authToken', authToken);
+            // Clean URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
         // Check login on load
         if (authToken) {
             document.getElementById('loginOverlay').classList.add('hidden');
         } else {
-            // 尝试加载飞书二维码
+            // 显示飞书登录
             initLogin();
         }
 
         async function initLogin() {
-            // 默认显示密码登录（飞书扫码备用）
-            showPasswordLogin();
+            // 尝试显示飞书扫码登录
+            try {
+                const response = await fetch('/api/login/status');
+                const data = await response.json();
+                
+                if (data.feishu_enabled) {
+                    showFeishuLogin();
+                    await refreshQRCode();
+                } else {
+                    showPasswordLogin();
+                }
+            } catch (e) {
+                showPasswordLogin();
+            }
         }
 
         async function refreshQRCode() {
@@ -1253,48 +1275,27 @@
                 if (data.success) {
                     currentQRState = data.state;
                     
-                    // 显示二维码
+                    // 显示二维码/登录链接
                     const container = document.getElementById('qrcodeContainer');
-                    container.innerHTML = `<img src="${data.qrcode_url}" class="qrcode-img" alt="QR Code">`;
+                    container.innerHTML = `
+                        <div style="text-align: center;">
+                            <p style="color: #333; font-size: 14px; margin-bottom: 10px;">点击下方按钮登录飞书</p>
+                            <a href="${data.login_page_url}" target="_blank" style="display: inline-block; padding: 12px 24px; background: #0066FF; color: white; text-decoration: none; border-radius: 6px; font-size: 14px;">
+                                飞书扫码登录
+                            </a>
+                        </div>
+                    `;
                     
-                    // 开始轮询
-                    document.getElementById('loginStatus').textContent = '请使用飞书扫码登录...';
+                    // 直接跳转登录
+                    document.getElementById('loginStatus').textContent = '点击上方按钮跳转飞书登录...';
                     document.getElementById('loginStatus').className = 'login-status waiting';
-                    
-                    startQRPolling(data.state);
                 } else {
                     document.getElementById('qrcodeContainer').innerHTML = 
-                        '<div class="qrcode-loading" style="color: red;">加载失败</div>';
+                        '<div class="qrcode-loading" style="color: red;">加载失败: ' + (data.message || '') + '</div>';
                 }
             } catch (e) {
                 document.getElementById('qrcodeContainer').innerHTML = 
                     '<div class="qrcode-loading" style="color: red;">加载失败</div>';
-            }
-        }
-
-        async function startQRPolling(state) {
-            if (qrPollingInterval) {
-                clearInterval(qrPollingInterval);
-            }
-            
-            // 每2秒检查一次扫码状态
-            qrPollingInterval = setInterval(async () => {
-                try {
-                    const response = await fetch('/api/login/qr?check=' + state);
-                    const data = await response.json();
-                    
-                    // 这里简化处理，实际应该由后端轮询飞书
-                    document.getElementById('loginStatus').textContent = '等待扫码中...';
-                } catch (e) {
-                    console.log('Polling...');
-                }
-            }, 2000);
-        }
-
-        function stopQRPolling() {
-            if (qrPollingInterval) {
-                clearInterval(qrPollingInterval);
-                qrPollingInterval = null;
             }
         }
 
@@ -1306,7 +1307,6 @@
         function showPasswordLogin() {
             document.getElementById('feishuLogin').style.display = 'none';
             document.getElementById('passwordLogin').style.display = 'block';
-            stopQRPolling();
         }
 
         async function doLogin() {
