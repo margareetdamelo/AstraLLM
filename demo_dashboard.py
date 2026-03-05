@@ -13,6 +13,7 @@ from typing import Dict, List
 from fastapi import FastAPI, Request, HTTPException, Depends
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 import uvicorn
 from loguru import logger
 import random
@@ -50,6 +51,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Static files
+app.mount("/static", StaticFiles(directory="."), name="static")
 
 # Simulated bot state
 demo_state = {
@@ -464,6 +468,17 @@ async def get_dashboard_summary(request: Request):
         "open_positions": demo_state["open_positions"],
         "recent_trades": demo_state["recent_trades"]
     }
+
+
+@app.get("/dashboard/closed-positions")
+async def get_closed_positions(request: Request, limit: int = 200):
+    """Get closed positions"""
+    token = verify_token(request)
+    if not token:
+        return JSONResponse(status_code=401, content={"error": "Unauthorized"})
+    
+    trades = demo_state["recent_trades"][:limit]
+    return {"trades": trades, "total": len(trades)}
 
 
 def main():
