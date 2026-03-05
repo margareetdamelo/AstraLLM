@@ -1,22 +1,24 @@
 """
 Configuration management for ASTER Trading Bot
+
+SECURITY NOTE: Sensitive credentials (API keys, private keys) MUST be provided
+via environment variables only. Never hardcode sensitive data in this file.
 """
 from pydantic_settings import BaseSettings
-from pydantic import Field
+from pydantic import Field, field_validator
 from typing import Optional
+import os
 
 
 class Settings(BaseSettings):
-    """Application settings"""
+    """Application settings - sensitive data from environment only"""
 
-    # Aster API Configuration (Web3 Ethereum Signature)
-    aster_api_key: str = Field(..., env="ASTER_API_KEY")  # API key from Aster dashboard
-    aster_api_secret: str = Field(..., env="ASTER_API_SECRET")  # API secret from Aster dashboard
-    aster_signer_address: str = Field(..., env="ASTER_SIGNER_ADDRESS")  # Agent wallet address from Aster
-
-    # User Wallet info (required for authentication)
-    aster_user_wallet_address: str = Field(..., env="ASTER_USER_WALLET_ADDRESS")
-    aster_private_key: str = Field(..., env="ASTER_PRIVATE_KEY")  # User wallet private key
+    # Aster API Configuration - MUST be provided via environment variables
+    aster_api_key: str = Field(default="", env="ASTER_API_KEY")
+    aster_api_secret: str = Field(default="", env="ASTER_API_SECRET")
+    aster_signer_address: str = Field(default="", env="ASTER_SIGNER_ADDRESS")
+    aster_user_wallet_address: str = Field(default="", env="ASTER_USER_WALLET_ADDRESS")
+    aster_private_key: str = Field(default="", env="ASTER_PRIVATE_KEY")
 
     # API Endpoints
     aster_futures_api: str = "https://fapi.asterdex.com"

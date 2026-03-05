@@ -1,5 +1,8 @@
 """
 Aster DEX API Client for Futures and Spot Trading
+
+SECURITY: This module handles sensitive operations including private keys.
+All sensitive data is passed via environment variables only.
 """
 import time
 import json
@@ -10,6 +13,20 @@ from web3 import Web3
 from eth_account import Account
 from eth_account.messages import encode_defunct
 from loguru import logger
+
+
+# HTTP Request Configuration
+DEFAULT_TIMEOUT = 10  # seconds
+MAX_RETRIES = 3
+RETRY_DELAY = 1  # base delay, will use exponential backoff
+
+
+class APIRequestError(Exception):
+    """Custom exception for API request failures"""
+    def __init__(self, message: str, status_code: Optional[int] = None, response: Optional[Dict] = None):
+        super().__init__(message)
+        self.status_code = status_code
+        self.response = response
 
 
 class AsterFuturesClient:
@@ -43,9 +60,8 @@ class AsterFuturesClient:
         self.symbol_precision = {}
 
         logger.info(f"Aster Client initialized:")
-        logger.info(f"  User (your wallet): {self.user}")
-        logger.info(f"  Signer (agent wallet): {self.signer}")
-        logger.info(f"  Signing with private key for address: {Account.from_key(self.private_key).address}")
+        logger.info(f"  User: {self.user[:6]}...{self.user[-4:]}")
+        logger.info(f"  Signer: {self.signer[:6]}...{self.signer[-4:]}")
 
         # Load exchange info to get precision for all symbols
         self._load_exchange_info()

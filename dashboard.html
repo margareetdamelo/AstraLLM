@@ -25,6 +25,140 @@
             min-height: 100vh;
         }
 
+        /* Login Overlay */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .login-overlay.hidden {
+            display: none;
+        }
+
+        .login-box {
+            background: #1E2329;
+            border: 2px solid #F0B90B;
+            border-radius: 12px;
+            padding: 40px;
+            width: 360px;
+            text-align: center;
+        }
+
+        .login-box h2 {
+            color: #F0B90B;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: #0B0E11;
+            border: 1px solid #3C3C3C;
+            border-radius: 6px;
+            color: #EAECEF;
+            font-size: 14px;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: #F0B90B;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            background: #F0B90B;
+            color: #0B0E11;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .login-box button:hover {
+            background: #E5A800;
+        }
+
+        .login-error {
+            color: #FF4444;
+            margin-top: 10px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .qrcode-container {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px auto;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qrcode-loading {
+            color: #333;
+            font-size: 14px;
+        }
+
+        .qrcode-img {
+            width: 150px;
+            height: 150px;
+        }
+
+        .login-status {
+            margin-top: 15px;
+            font-size: 14px;
+            min-height: 20px;
+        }
+
+        .login-status.waiting {
+            color: #F0B90B;
+        }
+
+        .login-status.success {
+            color: #00C853;
+        }
+
+        .login-status.error {
+            color: #FF4444;
+        }
+
+        .refresh-btn {
+            background: #2B3139;
+            color: #EAECEF;
+            border: 1px solid #3C3C3C;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        .refresh-btn:hover {
+            background: #3C3C3C;
+        }
+
+        .login-switch {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #2B3139;
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -185,6 +319,43 @@
             font-size: 12px;
             color: #848E9C;
             margin-bottom: 5px;
+        }
+
+        .capital-info {
+            background: #181A20;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #2B3139;
+        }
+
+        .capital-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #2B3139;
+        }
+
+        .capital-row:last-child {
+            border-bottom: none;
+        }
+
+        .capital-row.highlight {
+            margin-top: 8px;
+            padding-top: 10px;
+            border-top: 2px solid #F0B90B;
+            border-bottom: none;
+        }
+
+        .capital-label {
+            color: #848E9C;
+            font-size: 13px;
+        }
+
+        .capital-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #EAECEF;
         }
 
         .stat-value {
@@ -362,6 +533,17 @@
             font-weight: 600;
         }
 
+        .pos-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 2px 0;
+            border-bottom: 1px solid #2B3139;
+        }
+
+        .pos-detail-row:last-child {
+            border-bottom: none;
+        }
+
         .position-metric {
             display: inline-flex;
             align-items: center;
@@ -455,6 +637,32 @@
             font-size: 12px;
             line-height: 1.6;
             border: 1px solid #2B3139;
+        }
+
+        .trade-details {
+            margin-top: 8px;
+        }
+
+        .trade-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 2px 0;
+            border-bottom: 1px solid #2B3139;
+        }
+
+        .trade-row:last-child {
+            border-bottom: none;
+        }
+
+        .trade-row span:first-child {
+            color: #848E9C;
+        }
+
+        .pnl-row {
+            font-weight: bold;
+            padding-top: 6px;
+            margin-top: 4px;
+            border-top: 1px solid #2B3139;
         }
 
         .trade-header {
@@ -949,13 +1157,54 @@
     </style>
 </head>
 <body>
+    <!-- Login Overlay -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box" id="loginBox">
+            <!-- 飞书扫码登录 -->
+            <div id="feishuLogin">
+                <h2>🔐 飞书扫码登录</h2>
+                <p style="color: #848E9C; margin-bottom: 20px; font-size: 14px;">
+                    请使用飞书扫描二维码登录
+                </p>
+                <div class="qrcode-container" id="qrcodeContainer">
+                    <div class="qrcode-loading">加载中...</div>
+                </div>
+                <div class="login-status" id="loginStatus"></div>
+                <button class="refresh-btn" onclick="refreshQRCode()">刷新二维码</button>
+                <p style="color: #848E9C; margin-top: 15px; font-size: 12px;">
+                    首次登录需要绑定飞书账号
+                </p>
+            </div>
+            
+            <!-- 备用密码登录 -->
+            <div id="passwordLogin" style="display: none;">
+                <h2>🔐 备用密码登录</h2>
+                <input type="text" id="username" placeholder="Username" autocomplete="username">
+                <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+                <button onclick="doLogin()">Sign In</button>
+                <div class="login-error" id="loginError">Invalid credentials</div>
+                <p style="margin-top: 15px;">
+                    <a href="#" onclick="showFeishuLogin()" style="color: #F0B90B; text-decoration: none; font-size: 13px;">
+                        ← 返回飞书登录
+                    </a>
+                </p>
+            </div>
+            
+            <!-- 切换登录方式 -->
+            <div class="login-switch">
+                <a href="#" onclick="showPasswordLogin()" style="color: #848E9C; text-decoration: none; font-size: 12px;">
+                    使用密码登录 (备用)
+                </a>
+            </div>
+        </div>
+    </div>
+
     <div class="top-banner">
         ⚡ AUTO-REFRESH EVERY 10 SECONDS
     </div>
 
     <div class="container">
         <header>
-            <a href="https://avavoice.trade" class="home-btn" title="Go to avavoice.trade">🏠</a>
             <div class="status-box" id="statusBox">
                 <span class="status-badge status-running">● Running</span>
             </div>
@@ -978,6 +1227,135 @@
     <script>
         const API_URL = window.location.origin + '/dashboard/summary';
         let autoRefreshInterval;
+        let authToken = localStorage.getItem('authToken') || null;
+
+        let currentQRState = null;
+        let qrPollingInterval = null;
+
+        // Check login on load
+        if (authToken) {
+            document.getElementById('loginOverlay').classList.add('hidden');
+        } else {
+            // 尝试加载飞书二维码
+            initLogin();
+        }
+
+        async function initLogin() {
+            try {
+                const response = await fetch('/api/login/status');
+                const data = await response.json();
+                
+                if (data.feishu_enabled) {
+                    showFeishuLogin();
+                    await refreshQRCode();
+                } else {
+                    showPasswordLogin();
+                }
+            } catch (e) {
+                showPasswordLogin();
+            }
+        }
+
+        async function refreshQRCode() {
+            try {
+                const response = await fetch('/api/login/qr');
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentQRState = data.state;
+                    
+                    // 显示二维码
+                    const container = document.getElementById('qrcodeContainer');
+                    container.innerHTML = `<img src="${data.qrcode_url}" class="qrcode-img" alt="QR Code">`;
+                    
+                    // 开始轮询
+                    document.getElementById('loginStatus').textContent = '请使用飞书扫码登录...';
+                    document.getElementById('loginStatus').className = 'login-status waiting';
+                    
+                    startQRPolling(data.state);
+                } else {
+                    document.getElementById('qrcodeContainer').innerHTML = 
+                        '<div class="qrcode-loading" style="color: red;">加载失败</div>';
+                }
+            } catch (e) {
+                document.getElementById('qrcodeContainer').innerHTML = 
+                    '<div class="qrcode-loading" style="color: red;">加载失败</div>';
+            }
+        }
+
+        async function startQRPolling(state) {
+            if (qrPollingInterval) {
+                clearInterval(qrPollingInterval);
+            }
+            
+            // 每2秒检查一次扫码状态
+            qrPollingInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('/api/login/qr?check=' + state);
+                    const data = await response.json();
+                    
+                    // 这里简化处理，实际应该由后端轮询飞书
+                    document.getElementById('loginStatus').textContent = '等待扫码中...';
+                } catch (e) {
+                    console.log('Polling...');
+                }
+            }, 2000);
+        }
+
+        function stopQRPolling() {
+            if (qrPollingInterval) {
+                clearInterval(qrPollingInterval);
+                qrPollingInterval = null;
+            }
+        }
+
+        function showFeishuLogin() {
+            document.getElementById('feishuLogin').style.display = 'block';
+            document.getElementById('passwordLogin').style.display = 'none';
+        }
+
+        function showPasswordLogin() {
+            document.getElementById('feishuLogin').style.display = 'none';
+            document.getElementById('passwordLogin').style.display = 'block';
+            stopQRPolling();
+        }
+
+        async function doLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        type: 'password',
+                        username: username, 
+                        password: password
+                    })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    authToken = data.token;
+                    localStorage.setItem('authToken', authToken);
+                    document.getElementById('loginOverlay').classList.add('hidden');
+                    stopQRPolling();
+                } else {
+                    errorDiv.style.display = 'block';
+                    errorDiv.textContent = data.message || 'Invalid credentials';
+                }
+            } catch (e) {
+                errorDiv.style.display = 'block';
+                errorDiv.textContent = 'Connection error';
+            }
+        }
+
+        // Enter key for login
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') doLogin();
+        });
 
         function formatNumber(num, decimals = 2) {
             if (num === null || num === undefined) return 'N/A';
@@ -1160,10 +1538,30 @@
             // Statistics Card - Only percentages
             // Calculate daily PnL percentage
             const dailyPnLPercent = stats.initial_capital > 0 ? (stats.daily_pnl / stats.initial_capital) * 100 : 0;
+            const currentCapital = stats.initial_capital + stats.total_pnl + (stats.unrealized_pnl || 0);
+            const pnlSinceStart = currentCapital - stats.initial_capital;
+            const pnlSinceStartPercent = stats.initial_capital > 0 ? (pnlSinceStart / stats.initial_capital) * 100 : 0;
+            const pnlClass = pnlSinceStart >= 0 ? 'positive' : 'negative';
 
             html += `
                 <div class="card">
-                    <div class="card-title">💰 Performance</div>
+                    <div class="card-title">💰 Capital & Performance</div>
+                    
+                    <div class="capital-info">
+                        <div class="capital-row">
+                            <span class="capital-label">Initial Capital:</span>
+                            <span class="capital-value">${formatCurrency(stats.initial_capital)}</span>
+                        </div>
+                        <div class="capital-row">
+                            <span class="capital-label">Current Capital:</span>
+                            <span class="capital-value ${pnlClass}">${formatCurrency(currentCapital)}</span>
+                        </div>
+                        <div class="capital-row highlight">
+                            <span class="capital-label">Total PnL:</span>
+                            <span class="capital-value ${pnlClass}">${pnlSinceStart >= 0 ? '+' : ''}${formatCurrency(pnlSinceStart)} (${pnlSinceStart >= 0 ? '+' : ''}${pnlSinceStartPercent >= 0 ? '+' : ''}${pnlSinceStartPercent.toFixed(2)}%)</span>
+                        </div>
+                    </div>
+                    
                     <div class="stats-grid">
                         <div class="stat-box">
                             <div class="stat-label">ROI</div>
@@ -1287,18 +1685,28 @@
                                     </span>
                                 </span>
                                 <span class="position-side ${pos.side === 'LONG' ? 'side-long' : 'side-short'}">
-                                    ${pos.side} ${pos.leverage}x
+                                    ${pos.side} ${pos.leverage ? pos.leverage + 'x' : '-'}
                                 </span>
                             </div>
                             <div class="position-details">
-                                <strong>Entry:</strong> ${formatCurrency(pos.entry_price)} |
-                                <strong>Current:</strong> ${formatCurrency(pos.current_price)}<br>
-                                <strong>Quantity:</strong> ${formatNumber(pos.quantity, 4)} |
-                                <strong>Hold Time:</strong> ${formatNumber(pos.hold_time_hours || 0, 1)}h<br>
-                                <strong>Liquidation:</strong> ${formatCurrency(pos.liquidation_price)}
-                                <span style="color: ${priceDiff < 15 ? '#F6465D' : '#848E9C'};">
-                                    (${formatNumber(priceDiff, 1)}% away)
-                                </span><br>
+                                <div class="pos-detail-row">
+                                    <span><strong>Entry:</strong> ${formatCurrency(pos.entry_price)}</span>
+                                    <span><strong>Current:</strong> ${formatCurrency(pos.current_price)}</span>
+                                </div>
+                                <div class="pos-detail-row">
+                                    <span><strong>Quantity:</strong> ${formatNumber(pos.quantity, 4)}</span>
+                                    <span><strong>Position Value:</strong> ${formatCurrency(pos.position_value || pos.entry_price * pos.quantity)}</span>
+                                </div>
+                                <div class="pos-detail-row">
+                                    <span><strong>Stop Loss:</strong> ${formatCurrency(pos.stop_loss)}</span>
+                                    <span><strong>Take Profit:</strong> ${formatCurrency(pos.take_profit)}</span>
+                                </div>
+                                <div class="pos-detail-row">
+                                    <span><strong>Liquidation:</strong> ${formatCurrency(pos.liquidation_price)}</span>
+                                    <span style="color: ${priceDiff < 15 ? '#F6465D' : '#848E9C'};">
+                                        ${formatNumber(priceDiff, 1)}% away
+                                    </span>
+                                </div>
                                 <span class="position-strategy">📊 ${pos.strategy || 'Unknown'}</span>
                             </div>
                             ${alertMessage ? `<div class="position-alert ${alertClass}">⚠️ ${alertMessage}</div>` : ''}
@@ -1319,26 +1727,78 @@
                 html += `<p style="text-align: center; opacity: 0.7;">No recent trades</p>`;
             } else {
                 data.recent_trades.reverse().forEach(trade => {
-                    const exitTime = new Date(trade.exit_time);
+                    const pnlClass = trade.pnl >= 0 ? 'positive' : 'negative';
+                    const holdTime = trade.hold_duration_seconds ? 
+                        (trade.hold_duration_seconds < 60 ? trade.hold_duration_seconds + 's' : 
+                         Math.floor(trade.hold_duration_seconds / 60) + 'm') : '-';
+                    
                     html += `
                         <div class="trade">
                             <div class="trade-header">
                                 <strong>${trade.symbol}</strong>
                                 <span class="position-side ${trade.side === 'LONG' ? 'side-long' : 'side-short'}">
-                                    ${trade.side}
+                                    ${trade.side} ${trade.leverage ? trade.leverage + 'x' : '-'}
                                 </span>
                             </div>
-                            <div>
-                                Entry: ${formatCurrency(trade.entry_price)} →
-                                Exit: ${formatCurrency(trade.exit_price)}<br>
-                                PnL: <span class="${trade.pnl >= 0 ? 'positive' : 'negative'}">
-                                    ${formatPercentage(trade.pnl_percentage)}
-                                </span><br>
-                                Strategy: ${trade.strategy}<br>
-                                <small style="opacity: 0.7;">Exit: ${exitTime.toLocaleString('en-US')}</small>
+                            <div class="trade-details">
+                                <div class="trade-row">
+                                    <span>Entry → Exit:</span>
+                                    <span>${formatCurrency(trade.entry_price)} → ${formatCurrency(trade.exit_price)}</span>
+                                </div>
+                                <div class="trade-row">
+                                    <span>Quantity:</span>
+                                    <span>${trade.quantity !== undefined ? trade.quantity : '-'}</span>
+                                </div>
+                                <div class="trade-row">
+                                    <span>Position Value:</span>
+                                    <span>${trade.position_value !== undefined ? formatCurrency(trade.position_value) : '-'}</span>
+                                </div>
+                                <div class="trade-row">
+                                    <span>Commission:</span>
+                                    <span>${trade.commission !== undefined ? formatCurrency(trade.commission) : '-'}</span>
+                                </div>
+                                <div class="trade-row">
+                                    <span>Hold Time:</span>
+                                    <span>${holdTime !== 'undefined' ? holdTime : '-'}</span>
+                                </div>
+                                <div class="trade-row pnl-row">
+                                    <span>PnL:</span>
+                                    <span class="${pnlClass}">${trade.pnl >= 0 ? '+' : ''}${formatCurrency(trade.pnl)} (${trade.pnl >= 0 ? '+' : ''}${formatPercentage(trade.pnl_percentage || 0)}%)</span>
+                                </div>
+                                <div class="trade-row">
+                                    <span>Strategy:</span>
+                                    <span>${trade.strategy || '-'}</span>
+                                </div>
+                                <div class="trade-row">
+                                    <span>RSI:</span>
+                                    <span>${trade.entry_conditions?.rsi || '-'}</span>
+                                </div>
+                                <div class="trade-row">
+                                    <span>Volume Ratio:</span>
+                                    <span>${trade.entry_conditions?.volume_ratio ? trade.entry_conditions.volume_ratio + 'x' : '-'}</span>
+                                </div>
+                                <div class="trade-row">
+                                    <span>ATR %:</span>
+                                    <span>${trade.entry_conditions?.atr ? trade.entry_conditions.atr + '%' : '-'}</span>
+                                </div>
+                                <div class="trade-row">
+                                    <span>Trend:</span>
+                                    <span>${trade.entry_conditions?.trend || '-'}</span>
+                                </div>
+                                <div class="trade-row">
+                                    <span>Breakout:</span>
+                                    <span>${trade.entry_conditions?.breakout === true ? '✓ Yes' : trade.entry_conditions?.breakout === false ? '✗ No' : '-'}</span>
+                                </div>
+                                <div class="trade-row">
+                                    <span>Confidence:</span>
+                                    <span>${trade.entry_conditions?.signal_confidence ? (trade.entry_conditions.signal_confidence * 100).toFixed(0) + '%' : '-'}</span>
+                                </div>
+                                <div class="trade-row">
+                                    <span>Exit Time:</span>
+                                    <span>${trade.exit_time ? new Date(trade.exit_time).toLocaleString('en-US') : '-'}</span>
+                                </div>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 });
             }
 
@@ -1830,7 +2290,18 @@
             refreshBtn.classList.add('spinning');
 
             try {
-                const response = await fetch(API_URL);
+                const response = await fetch(API_URL, {
+                    headers: authToken ? {'Authorization': 'Bearer ' + authToken} : {}
+                });
+                
+                if (response.status === 401) {
+                    // Unauthorized - show login
+                    localStorage.removeItem('authToken');
+                    authToken = null;
+                    document.getElementById('loginOverlay').classList.remove('hidden');
+                    return;
+                }
+                
                 const data = await response.json();
 
                 // Update timestamp
