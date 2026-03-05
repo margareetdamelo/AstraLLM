@@ -24,20 +24,20 @@ class FeishuAuth:
         self.redirect_uri = FEISHU_REDIRECT_URI
     
     def get_authorization_url(self, state: str) -> str:
-        base_url = "https://open.feishu.cn/open-apis/authen/v1/authorize"
+        base_url = "https://open.lark.com/open-apis/authen/v1/authorize"
         return f"{base_url}?app_id={self.app_id}&redirect_uri={self.redirect_uri}&state={state}"
     
     def get_qrcode_url(self, state: str) -> str:
-        return f"https://open.feishu.cn/open-apis/authen/v1/authorize?app_id={self.app_id}&redirect_uri={self.redirect_uri}&state={state}"
+        return f"https://open.lark.com/open-apis/authen/v1/authorize?app_id={self.app_id}&redirect_uri={self.redirect_uri}&state={state}"
     
     def get_login_page_url(self, state: str) -> str:
-        return f"https://open.feishu.cn/open-apis/authen/v1/index.html?app_id={self.app_id}&redirect_uri={self.redirect_uri}&state={state}"
+        return f"https://open.lark.com/open-apis/authen/v1/index.html?app_id={self.app_id}&redirect_uri={self.redirect_uri}&state={state}"
     
     def get_mini_app_login_url(self, state: str) -> str:
-        return f"https://open.feishu.cn/open-apis/authen/v1/authorize?app_id={self.app_id}&redirect_uri={self.redirect_uri}&state={state}&type=miniapp"
+        return f"https://open.lark.com/open-apis/authen/v1/authorize?app_id={self.app_id}&redirect_uri={self.redirect_uri}&state={state}&type=miniapp"
     
     def exchange_code_for_token(self, code: str) -> Optional[Dict]:
-        url = "https://open.feishu.cn/open-apis/authen/v1/access_token"
+        url = "https://open.lark.com/open-apis/authen/v1/access_token"
         headers = {"Content-Type": "application/json"}
         payload = {
             "grant_type": "authorization_code",
@@ -62,7 +62,7 @@ class FeishuAuth:
             return None
     
     def get_user_info(self, access_token: str) -> Optional[Dict]:
-        url = "https://open.feishu.cn/open-apis/authen/v1/user_info"
+        url = "https://open.lark.com/open-apis/authen/v1/user_info"
         headers = {"Authorization": f"Bearer {access_token}"}
         
         try:
