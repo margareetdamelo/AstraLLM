@@ -466,17 +466,6 @@ async def get_dashboard_summary(request: Request):
     }
 
 
-@app.get("/dashboard/closed-positions")
-async def get_closed_positions(request: Request, limit: int = 200):
-    """Get closed positions - requires authentication"""
-    token = verify_token(request)
-    if not token:
-        return JSONResponse(status_code=401, content={"error": "Unauthorized"})
-    
-    trades = demo_state["recent_trades"][:limit]
-    return {"trades": trades, "total": len(trades)}
-
-
 def main():
     """Main entry point"""
     print("="*70)

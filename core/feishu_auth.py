@@ -62,7 +62,6 @@ class LarkAuth:
                 "expires_in": data.get("expires_in"),
                 "refresh_token": data.get("refresh_token"),
                 "open_id": data.get("open_id"),
-                # 直接从token响应获取用户信息
                 "name": data.get("name"),
                 "email": data.get("email"),
                 "en_name": data.get("en_name"),
@@ -76,7 +75,6 @@ class LarkAuth:
             return None
     
     def get_user_info(self, access_token: str) -> Optional[Dict]:
-        # 由于权限限制，直接返回None，使用token响应中的用户信息
         return None
     
     def create_session(self, user_info: Dict) -> str:
@@ -140,7 +138,6 @@ def verify_auth_code(code: str, state: str = None) -> Optional[str]:
     
     user_info = lark_auth.get_user_info(access_token)
     if not user_info:
-        # 使用token响应中的用户信息
         user_info = {
             "open_id": token_data.get("open_id", "unknown"),
             "name": token_data.get("name") or token_data.get("en_name") or "User",
