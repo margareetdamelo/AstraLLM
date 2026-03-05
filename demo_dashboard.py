@@ -11,7 +11,7 @@ import secrets
 from datetime import datetime, timedelta
 from typing import Dict, List
 from fastapi import FastAPI, Request, HTTPException, Depends
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from loguru import logger

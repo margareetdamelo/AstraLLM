@@ -55,12 +55,18 @@ class LarkAuth:
                 return None
             
             data = token_json.get("data", {})
+            
             return {
                 "access_token": data.get("access_token"),
                 "token_type": data.get("token_type"),
                 "expires_in": data.get("expires_in"),
                 "refresh_token": data.get("refresh_token"),
-                "open_id": data.get("open_id")
+                "open_id": data.get("open_id"),
+                # 直接从token响应获取用户信息
+                "name": data.get("name"),
+                "email": data.get("email"),
+                "en_name": data.get("en_name"),
+                "avatar_url": data.get("avatar_url")
             }
                 
         except Exception as e:
@@ -70,31 +76,8 @@ class LarkAuth:
             return None
     
     def get_user_info(self, access_token: str) -> Optional[Dict]:
-        user_url = "https://open.larksuite.com/open-apis/contact/v3/users/me"
-        user_headers = {"Authorization": f"Bearer {access_token}"}
-        
-        try:
-            response = httpx.get(user_url, headers=user_headers, timeout=10)
-            user_json = response.json()
-            logger.info(f"Lark user response: {user_json}")
-            
-            if user_json.get("code") != 0:
-                logger.error(f"Lark user info failed: {user_json}")
-                return None
-            
-            user_data = user_json.get("data", {}).get("user", {})
-            return {
-                "open_id": user_data.get("open_id"),
-                "user_id": user_data.get("user_id"),
-                "name": user_data.get("name"),
-                "email": user_data.get("email")
-            }
-                
-        except Exception as e:
-            logger.error(f"Lark user info error: {e}")
-            import traceback
-            logger.error(traceback.format_exc())
-            return None
+        # 由于权限限制，直接返回None，使用token响应中的用户信息
+        return None
     
     def create_session(self, user_info: Dict) -> str:
         session_token = secrets.token_hex(32)
@@ -157,9 +140,11 @@ def verify_auth_code(code: str, state: str = None) -> Optional[str]:
     
     user_info = lark_auth.get_user_info(access_token)
     if not user_info:
+        # 使用token响应中的用户信息
         user_info = {
             "open_id": token_data.get("open_id", "unknown"),
-            "name": "User"
+            "name": token_data.get("name") or token_data.get("en_name") or "User",
+            "email": token_data.get("email", "")
         }
     
     session_token = lark_auth.create_session(user_info)
