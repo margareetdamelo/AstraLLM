@@ -1,9 +1,9 @@
 """
-飞书登录认证模块
-支持飞书扫码登录和飞书内应用登录
+Lark登录认证模块
+使用httpx直接调用API
 """
 import secrets
-import requests
+import httpx
 from datetime import datetime, timedelta
 from typing import Optional, Dict
 from loguru import logger
@@ -17,66 +17,83 @@ feishu_sessions = {}
 auth_codes = {}
 
 
-class FeishuAuth:
+class LarkAuth:
     def __init__(self):
         self.app_id = FEISHU_APP_ID
         self.app_secret = FEISHU_APP_SECRET
         self.redirect_uri = FEISHU_REDIRECT_URI
+        logger.info(f"LarkAuth initialized with app_id: {self.app_id}")
     
     def get_authorization_url(self, state: str) -> str:
-        base_url = "https://open.larksuite.com/open-apis/authen/v1/authorize"
-        return f"{base_url}?app_id={self.app_id}&redirect_uri={self.redirect_uri}&state={state}"
-    
-    def get_qrcode_url(self, state: str) -> str:
-        return f"https://open.larksuite.com/open-apis/authen/v1/authorize?app_id={self.app_id}&redirect_uri={self.redirect_uri}&state={state}"
+        url = (
+            "https://open.larksuite.com/open-apis/authen/v1/authorize"
+            f"?app_id={self.app_id}"
+            f"&redirect_uri={self.redirect_uri}"
+            "&response_type=code"
+        )
+        return url
     
     def get_login_page_url(self, state: str) -> str:
-        return f"https://open.larksuite.com/open-apis/authen/v1/index.html?app_id={self.app_id}&redirect_uri={self.redirect_uri}&state={state}"
-    
-    def get_mini_app_login_url(self, state: str) -> str:
-        return f"https://open.larksuite.com/open-apis/authen/v1/authorize?app_id={self.app_id}&redirect_uri={self.redirect_uri}&state={state}&type=miniapp"
+        return self.get_authorization_url(state)
     
     def exchange_code_for_token(self, code: str) -> Optional[Dict]:
-        url = "https://open.larksuite.com/open-apis/authen/v1/access_token"
-        headers = {"Content-Type": "application/json"}
-        
-        payload = {
+        token_url = "https://open.larksuite.com/open-apis/authen/v1/access_token"
+        token_data = {
             "grant_type": "authorization_code",
-            "app_id": self.app_id,
-            "app_secret": self.app_secret,
             "code": code,
-            "redirect_uri": self.redirect_uri
+            "app_id": self.app_id,
+            "app_secret": self.app_secret
         }
         
-        logger.info(f"Lark token request - app_id: {self.app_id}, redirect_uri: {self.redirect_uri}")
-        
         try:
-            response = requests.post(url, headers=headers, json=payload, timeout=10)
-            data = response.json()
-            logger.info(f"Lark token response: {data}")
+            response = httpx.post(token_url, json=token_data, timeout=10)
+            token_json = response.json()
+            logger.info(f"Lark token response: {token_json}")
             
-            if data.get("code") == 0:
-                return data.get("data", {})
-            else:
-                logger.error(f"Feishu auth failed: {data}")
+            if token_json.get("code") != 0:
+                logger.error(f"Lark token failed: {token_json}")
                 return None
+            
+            data = token_json.get("data", {})
+            return {
+                "access_token": data.get("access_token"),
+                "token_type": data.get("token_type"),
+                "expires_in": data.get("expires_in"),
+                "refresh_token": data.get("refresh_token"),
+                "open_id": data.get("open_id")
+            }
+                
         except Exception as e:
-            logger.error(f"Feishu auth error: {e}")
+            logger.error(f"Lark token error: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
             return None
     
     def get_user_info(self, access_token: str) -> Optional[Dict]:
-        url = "https://open.larksuite.com/open-apis/authen/v1/user_info"
-        headers = {"Authorization": f"Bearer {access_token}"}
+        user_url = "https://open.larksuite.com/open-apis/contact/v3/users/me"
+        user_headers = {"Authorization": f"Bearer {access_token}"}
         
         try:
-            response = requests.get(url, headers=headers, timeout=10)
-            data = response.json()
+            response = httpx.get(user_url, headers=user_headers, timeout=10)
+            user_json = response.json()
+            logger.info(f"Lark user response: {user_json}")
             
-            if data.get("code") == 0:
-                return data.get("data", {})
-            return None
+            if user_json.get("code") != 0:
+                logger.error(f"Lark user info failed: {user_json}")
+                return None
+            
+            user_data = user_json.get("data", {}).get("user", {})
+            return {
+                "open_id": user_data.get("open_id"),
+                "user_id": user_data.get("user_id"),
+                "name": user_data.get("name"),
+                "email": user_data.get("email")
+            }
+                
         except Exception as e:
-            logger.error(f"Get user info error: {e}")
+            logger.error(f"Lark user info error: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
             return None
     
     def create_session(self, user_info: Dict) -> str:
@@ -104,9 +121,7 @@ class FeishuAuth:
         return session["user_info"]
 
 
-feishu_auth = FeishuAuth()
-
-logger.info(f"FeishuAuth initialized - app_id: {feishu_auth.app_id}, app_secret: {feishu_auth.app_secret[:5]}...")
+lark_auth = LarkAuth()
 
 
 def generate_login_qr() -> Dict:
@@ -119,9 +134,8 @@ def generate_login_qr() -> Dict:
     
     return {
         "state": state,
-        "qrcode_url": feishu_auth.get_login_page_url(state),
-        "auth_url": feishu_auth.get_authorization_url(state),
-        "login_page_url": feishu_auth.get_login_page_url(state),
+        "login_page_url": lark_auth.get_login_page_url(state),
+        "auth_url": lark_auth.get_authorization_url(state),
         "expires_in": 300
     }
 
@@ -133,7 +147,7 @@ def verify_auth_code(code: str, state: str = None) -> Optional[str]:
             del auth_codes[state]
             state_data = None
     
-    token_data = feishu_auth.exchange_code_for_token(code)
+    token_data = lark_auth.exchange_code_for_token(code)
     if not token_data:
         return None
     
@@ -141,15 +155,14 @@ def verify_auth_code(code: str, state: str = None) -> Optional[str]:
     if not access_token:
         return None
     
-    user_info = feishu_auth.get_user_info(access_token)
+    user_info = lark_auth.get_user_info(access_token)
     if not user_info:
         user_info = {
             "open_id": token_data.get("open_id", "unknown"),
-            "union_id": token_data.get("union_id", ""),
-            "name": token_data.get("name", "User")
+            "name": "User"
         }
     
-    session_token = feishu_auth.create_session(user_info)
+    session_token = lark_auth.create_session(user_info)
     
     if state and state in auth_codes:
         del auth_codes[state]
@@ -158,4 +171,4 @@ def verify_auth_code(code: str, state: str = None) -> Optional[str]:
 
 
 def get_current_user(token: str) -> Optional[Dict]:
-    return feishu_auth.verify_session(token)
+    return lark_auth.verify_session(token)
