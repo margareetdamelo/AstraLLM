@@ -19,7 +19,9 @@ import random
 import os
 
 # 导入飞书认证模块
+feishu_auth_module = None
 try:
+    import core.feishu_auth as feishu_auth_module
     from core.feishu_auth import (
         generate_login_qr,
         verify_auth_code,
@@ -28,9 +30,11 @@ try:
     )
     FEISHU_ENABLED = True
     logger.info("Lark authentication enabled")
-except ImportError as e:
+except Exception as e:
     FEISHU_ENABLED = False
-    logger.error(f"Lark authentication module not found: {e}")
+    logger.error(f"Lark authentication module error: {e}")
+    import traceback
+    logger.error(traceback.format_exc())
 
 # Session tokens (in production, use a proper session store)
 sessions = {}  # token -> expiry time
