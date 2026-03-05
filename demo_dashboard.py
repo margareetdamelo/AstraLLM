@@ -272,6 +272,7 @@ def verify_token(request: Request):
         return None
     token = auth_header[7:]
     expiry = sessions.get(token)
+    logger.info(f"verify_token: token={token[:10]}..., found={token in sessions}, expiry={expiry}, sessions_count={len(sessions)}")
     if expiry and expiry > datetime.now():
         return token
     return None
@@ -364,7 +365,7 @@ async def lark_callback(request: Request):
         
         if session_token:
             sessions[session_token] = datetime.now() + timedelta(days=7)
-            logger.info(f"Session created: {session_token[:10]}...")
+            logger.info(f"Session created: {session_token[:10]}..., sessions count: {len(sessions)}")
             # 重定向回首页
             response = RedirectResponse(url="/?token=" + session_token)
             response.set_cookie(key="authToken", value=session_token, httponly=True, max_age=60*60*24*7)
