@@ -13,7 +13,6 @@ from typing import Dict, List
 from fastapi import FastAPI, Request, HTTPException, Depends
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 import uvicorn
 from loguru import logger
 import random
@@ -51,9 +50,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Static files
-app.mount("/static", StaticFiles(directory="."), name="static")
 
 # Simulated bot state
 demo_state = {
