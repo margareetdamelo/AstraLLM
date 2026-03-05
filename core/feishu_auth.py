@@ -39,10 +39,11 @@ class FeishuAuth:
     def exchange_code_for_token(self, code: str) -> Optional[Dict]:
         url = "https://open.larksuite.com/open-apis/authen/v1/access_token"
         headers = {"Content-Type": "application/json"}
+        
         payload = {
             "grant_type": "authorization_code",
-            "client_id": self.app_id,
-            "client_secret": self.app_secret,
+            "app_id": self.app_id,
+            "app_secret": self.app_secret,
             "code": code,
             "redirect_uri": self.redirect_uri
         }
