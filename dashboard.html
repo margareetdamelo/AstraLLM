@@ -1806,7 +1806,9 @@
                 // If no internal trades, fetch from closed positions as fallback
                 if (allTrades.length === 0) {
                     try {
-                        const response = await fetch(window.location.origin + '/dashboard/closed-positions?limit=200');
+                        const response = await fetch(window.location.origin + '/dashboard/closed-positions?limit=10', {
+                    headers: authToken ? {'Authorization': 'Bearer ' + authToken} : {}
+                });
                         const closedData = await response.json();
 
                         if (closedData.closed_positions && closedData.closed_positions.length > 0) {
@@ -2228,7 +2230,9 @@
 
         async function loadClosedPositions() {
             try {
-                const response = await fetch(window.location.origin + '/dashboard/closed-positions?limit=20');
+                const response = await fetch(window.location.origin + '/dashboard/closed-positions?limit=10', {
+                    headers: authToken ? {'Authorization': 'Bearer ' + authToken} : {}
+                });
                 const data = await response.json();
 
                 if (data.closed_positions && data.closed_positions.length > 0) {
