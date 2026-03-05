@@ -740,7 +740,7 @@ BacktestConfig(
 | **模拟交易** | `python main.py --dry-run --symbols BTCUSDT` | 不下单只打印日志 |
 | **历史回测** | `python main.py --backtest --symbols BTCUSDT` | 使用历史数据回测 |
 | **API 服务** | `python run_api.py` | 启动 REST API + Dashboard |
-| **Demo** | `python demo_dashboard.py` | 模拟数据 Dashboard 演示 |
+| **Demo** | `python demo_dashboard.py` | 模拟数据 Dashboard 演示 ,- 用户名 : admin , - 密码 : [:WDy$W*D-RzTQ% |
 
 ---
 

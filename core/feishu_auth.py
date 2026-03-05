@@ -11,7 +11,7 @@ from loguru import logger
 
 FEISHU_APP_ID = "cli_a923ab78f1625e1b"
 FEISHU_APP_SECRET = "VoLtveX30VBVyKiseDAZwcu4aLznoWvZ"
-FEISHU_REDIRECT_URI = "https://quant-astrallm.goldwarts.com/auth/feishu/callback"
+FEISHU_REDIRECT_URI = "https://quant-astrallm.goldwarts.com/auth/lark/callback"
 
 feishu_sessions = {}
 auth_codes = {}

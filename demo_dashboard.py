@@ -339,7 +339,7 @@ async def get_login_qr():
         return {"success": False, "message": str(e)}
 
 
-@app.get("/auth/feishu/callback")
+@app.get("/auth/lark/callback")
 async def feishu_callback(request: Request):
     """飞书授权回调 - GET请求（网页跳转）"""
     if not FEISHU_ENABLED:
@@ -367,7 +367,7 @@ async def feishu_callback(request: Request):
         return {"success": False, "message": str(e)}
 
 
-@app.post("/auth/feishu/callback")
+@app.post("/auth/lark/callback")
 async def feishu_callback_post(request: Request):
     """飞书授权回调 - POST请求"""
     return await feishu_callback(request)
