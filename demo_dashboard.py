@@ -212,41 +212,50 @@ def simulate_market_updates():
             leverage = random.choice([5, 10, 15, 20])
             quantity = random.uniform(0.01, 0.1)
             
+            # Position value = 数量 × 价格（不是乘以杠杆，杠杆只是影响保证金和盈亏）
+            position_value = base_price * quantity
+            
             pos = {
                 "symbol": symbol,
                 "side": side,
                 "entry_price": round(base_price, 2),
-                "current_price": 0,
+                "current_price": round(base_price * random.uniform(0.99, 1.01), 2),
                 "quantity": round(quantity, 4),
                 "leverage": leverage,
-                "position_value": round(base_price * quantity * leverage, 2),
+                "position_value": round(position_value, 2),
                 "unrealized_pnl": 0,
                 "stop_loss": 0,
                 "take_profit": 0,
                 "liquidation_price": 0,
                 "strategy": demo_state["selected_strategy"]
             }
-            pos["current_price"] = base_price * random.uniform(0.98, 1.02)
             
+            # 计算未实现盈亏
             pnl_per_price = quantity * leverage
             if side == "LONG":
                 pos["unrealized_pnl"] = round((pos["current_price"] - pos["entry_price"]) * pnl_per_price, 2)
             else:
                 pos["unrealized_pnl"] = round((pos["entry_price"] - pos["current_price"]) * pnl_per_price, 2)
             
-            sl_distance = 0.02 if side == "LONG" else -0.02
-            tp_distance = 0.04 if side == "LONG" else -0.04
-            pos["stop_loss"] = round(pos["entry_price"] * (1 + sl_distance), 2)
-            pos["take_profit"] = round(pos["entry_price"] * (1 + tp_distance), 2)
+            # 设置止损止盈（方向正确）
+            if side == "LONG":
+                # 多单：止损在入场价下方，止盈在入场价上方
+                pos["stop_loss"] = round(pos["entry_price"] * (1 - 0.02), 2)  # 2% 止损
+                pos["take_profit"] = round(pos["entry_price"] * (1 + 0.04), 2)  # 4% 止盈
+            else:
+                # 空单：止损在入场价上方，止盈在入场价下方
+                pos["stop_loss"] = round(pos["entry_price"] * (1 + 0.02), 2)  # 2% 止损
+                pos["take_profit"] = round(pos["entry_price"] * (1 - 0.04), 2)  # 4% 止盈
             
+            # 清算价格计算
             liq_distance = 1 / leverage
             if side == "LONG":
-                pos["liquidation_price"] = round(pos["entry_price"] * (1 - liq_distance + 0.005), 2)
+                pos["liquidation_price"] = round(pos["entry_price"] * (1 - liq_distance + 0.01), 2)
             else:
-                pos["liquidation_price"] = round(pos["entry_price"] * (1 + liq_distance - 0.005), 2)
+                pos["liquidation_price"] = round(pos["entry_price"] * (1 + liq_distance - 0.01), 2)
 
             demo_state["open_positions"].append(pos)
-            logger.info(f"Opened position: {pos['side']} {pos['symbol']}")
+            logger.info(f"Opened position: {pos['side']} {pos['symbol']} @ {pos['entry_price']}")
 
         elif demo_state["open_positions"] and random.random() < 0.3:
             # Close position
