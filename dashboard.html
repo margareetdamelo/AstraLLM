@@ -1160,11 +1160,11 @@
     <!-- Login Overlay -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-box" id="loginBox">
-            <!-- 飞书扫码登录 -->
-            <div id="feishuLogin">
-                <h2>🔐 飞书扫码登录</h2>
+            <!-- lark扫码登录 -->
+            <div id="larkLogin">
+                <h2>🔐 lark扫码登录</h2>
                 <p style="color: #848E9C; margin-bottom: 20px; font-size: 14px;">
-                    请使用飞书扫描二维码登录
+                    请使用lark扫描二维码登录
                 </p>
                 <div class="qrcode-container" id="qrcodeContainer">
                     <div class="qrcode-loading">加载中...</div>
@@ -1172,7 +1172,7 @@
                 <div class="login-status" id="loginStatus"></div>
                 <button class="refresh-btn" onclick="refreshQRCode()">刷新二维码</button>
                 <p style="color: #848E9C; margin-top: 15px; font-size: 12px;">
-                    首次登录需要绑定飞书账号
+                    首次登录需要绑定lark账号
                 </p>
             </div>
             
@@ -1185,7 +1185,7 @@
                 <div class="login-error" id="loginError">Invalid credentials</div>
                 <p style="margin-top: 15px;">
                     <a href="#" onclick="showFeishuLogin()" style="color: #F0B90B; text-decoration: none; font-size: 13px;">
-                        ← 返回飞书登录
+                        ← 返回lark登录
                     </a>
                 </p>
             </div>
@@ -1246,12 +1246,12 @@
         if (authToken) {
             document.getElementById('loginOverlay').classList.add('hidden');
         } else {
-            // 显示飞书登录
+            // 显示lark登录
             initLogin();
         }
 
         async function initLogin() {
-            // 默认显示飞书扫码登录
+            // 默认显示lark扫码登录
             showFeishuLogin();
             // 直接显示登录按钮，不依赖API
             showFeishuLoginButton();
@@ -1261,20 +1261,20 @@
             const container = document.getElementById('qrcodeContainer');
             const state = Math.random().toString(36).substring(2);
             const appId = 'cli_a923ab78f1625e1b';
-            const redirectUri = encodeURIComponent('https://quant-astrallm.goldwarts.com/auth/feishu/callback');
-            const loginUrl = `https://open.feishu.cn/open-apis/authen/v1/authorize?app_id=${appId}&redirect_uri=${redirectUri}&state=${state}`;
+            const redirectUri = encodeURIComponent('https://quant-astrallm.goldwarts.com/auth/lark/callback');
+            const loginUrl = `https://open.lark.cn/open-apis/authen/v1/authorize?app_id=${appId}&redirect_uri=${redirectUri}&state=${state}`;
             
             container.innerHTML = `
                 <div style="text-align: center;">
-                    <p style="color: #333; font-size: 14px; margin-bottom: 15px;">点击下方按钮使用飞书账号登录</p>
+                    <p style="color: #333; font-size: 14px; margin-bottom: 15px;">点击下方按钮使用lark账号登录</p>
                     <a href="${loginUrl}" target="_blank" style="display: inline-block; padding: 15px 30px; background: #0066FF; color: white; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: 600;">
-                        飞书扫码登录
+                        lark扫码登录
                     </a>
-                    <p style="color: #666; font-size: 12px; margin-top: 15px;">将在新窗口打开飞书授权页面</p>
+                    <p style="color: #666; font-size: 12px; margin-top: 15px;">将在新窗口打开lark授权页面</p>
                 </div>
             `;
             
-            document.getElementById('loginStatus').textContent = '点击上方按钮跳转飞书登录';
+            document.getElementById('loginStatus').textContent = '点击上方按钮跳转lark登录';
             document.getElementById('loginStatus').className = 'login-status waiting';
         }
 
@@ -1290,15 +1290,15 @@
                     const container = document.getElementById('qrcodeContainer');
                     container.innerHTML = `
                         <div style="text-align: center;">
-                            <p style="color: #333; font-size: 14px; margin-bottom: 10px;">点击下方按钮登录飞书</p>
+                            <p style="color: #333; font-size: 14px; margin-bottom: 10px;">点击下方按钮登录lark</p>
                             <a href="${data.login_page_url}" target="_blank" style="display: inline-block; padding: 12px 24px; background: #0066FF; color: white; text-decoration: none; border-radius: 6px; font-size: 14px;">
-                                飞书扫码登录
+                                lark扫码登录
                             </a>
                         </div>
                     `;
                     
                     // 直接跳转登录
-                    document.getElementById('loginStatus').textContent = '点击上方按钮跳转飞书登录...';
+                    document.getElementById('loginStatus').textContent = '点击上方按钮跳转lark登录...';
                     document.getElementById('loginStatus').className = 'login-status waiting';
                 } else {
                     document.getElementById('qrcodeContainer').innerHTML = 
@@ -1311,12 +1311,12 @@
         }
 
         function showFeishuLogin() {
-            document.getElementById('feishuLogin').style.display = 'block';
+            document.getElementById('larkLogin').style.display = 'block';
             document.getElementById('passwordLogin').style.display = 'none';
         }
 
         function showPasswordLogin() {
-            document.getElementById('feishuLogin').style.display = 'none';
+            document.getElementById('larkLogin').style.display = 'none';
             document.getElementById('passwordLogin').style.display = 'block';
         }
 
