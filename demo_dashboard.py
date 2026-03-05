@@ -27,10 +27,10 @@ try:
         feishu_sessions
     )
     FEISHU_ENABLED = True
-    logger.info("Feishu authentication enabled")
-except ImportError:
+    logger.info("Lark authentication enabled")
+except ImportError as e:
     FEISHU_ENABLED = False
-    logger.warning("Feishu authentication module not found, using password login")
+    logger.error(f"Lark authentication module not found: {e}")
 
 # Session tokens (in production, use a proper session store)
 sessions = {}  # token -> expiry time
@@ -340,9 +340,12 @@ async def get_login_qr():
 
 
 @app.get("/auth/lark/callback")
-async def feishu_callback(request: Request):
-    """飞书授权回调 - GET请求（网页跳转）"""
+async def lark_callback(request: Request):
+    """Lark授权回调"""
+    logger.info(f"Lark callback received: {request.query_params}")
+    
     if not FEISHU_ENABLED:
+        logger.error("FEISHU_ENABLED is False")
         return JSONResponse({"success": False, "message": "Feishu not enabled"})
     
     try:
@@ -352,18 +355,22 @@ async def feishu_callback(request: Request):
         if not code:
             return JSONResponse({"success": False, "message": "No code provided"})
         
+        logger.info(f"Exchanging code: {code[:10]}...")
         session_token = verify_auth_code(code, state)
+        
         if session_token:
             sessions[session_token] = datetime.now() + timedelta(days=7)
-            # 重定向回首页并携带token
-            from fastapi.responses import RedirectResponse
+            logger.info(f"Session created: {session_token[:10]}...")
+            # 重定向回首页
             response = RedirectResponse(url="/?token=" + session_token)
             response.set_cookie(key="authToken", value=session_token, httponly=True, max_age=60*60*24*7)
             return response
-        
-        return {"success": False, "message": "Invalid code"}
+        else:
+            logger.error("Failed to verify auth code")
+            return {"success": False, "message": "Invalid code"}
+            
     except Exception as e:
-        logger.error(f"Feishu callback error: {e}")
+        logger.error(f"Lark callback error: {e}")
         return {"success": False, "message": str(e)}
 
 
