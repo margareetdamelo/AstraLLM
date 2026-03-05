@@ -47,10 +47,12 @@ class FeishuAuth:
             "redirect_uri": self.redirect_uri
         }
         
+        logger.info(f"Lark token request - app_id: {self.app_id}, redirect_uri: {self.redirect_uri}")
+        
         try:
             response = requests.post(url, headers=headers, json=payload, timeout=10)
             data = response.json()
-            logger.info(f"Feishu token response: {data}")
+            logger.info(f"Lark token response: {data}")
             
             if data.get("code") == 0:
                 return data.get("data", {})
@@ -102,6 +104,8 @@ class FeishuAuth:
 
 
 feishu_auth = FeishuAuth()
+
+logger.info(f"FeishuAuth initialized - app_id: {feishu_auth.app_id}, app_secret: {feishu_auth.app_secret[:5]}...")
 
 
 def generate_login_qr() -> Dict:
