@@ -28,10 +28,12 @@ def example_1_test_api_connection():
 
     settings = get_settings()
 
-    # Initialize client
+    # Initialize client - CORRECT PARAMETERS
     client = AsterFuturesClient(
-        api_wallet=settings.aster_api_wallet_address,
-        user_wallet=settings.aster_user_wallet_address,
+        api_key=settings.aster_api_key,
+        api_secret=settings.aster_api_secret,
+        signer_address=settings.aster_signer_address,
+        user_address=settings.aster_user_wallet_address,
         private_key=settings.aster_private_key
     )
 
@@ -54,9 +56,12 @@ def example_2_strategy_analysis():
     print("\n=== Example 2: Strategy Analysis ===\n")
 
     settings = get_settings()
+    # CORRECT PARAMETERS
     client = AsterFuturesClient(
-        api_wallet=settings.aster_api_wallet_address,
-        user_wallet=settings.aster_user_wallet_address,
+        api_key=settings.aster_api_key,
+        api_secret=settings.aster_api_secret,
+        signer_address=settings.aster_signer_address,
+        user_address=settings.aster_user_wallet_address,
         private_key=settings.aster_private_key
     )
 

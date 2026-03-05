@@ -7,6 +7,7 @@ from .market_making import MarketMakingStrategy
 from .order_flow_imbalance import OrderFlowImbalanceStrategy
 from .vwap_reversion import VWAPReversionStrategy
 from .support_resistance_bounce import SupportResistanceBounceStrategy
+from .backtest_strategy import BacktestStrategy
 
 __all__ = [
     "BaseStrategy",
@@ -17,5 +18,6 @@ __all__ = [
     "MarketMakingStrategy",
     "OrderFlowImbalanceStrategy",
     "VWAPReversionStrategy",
-    "SupportResistanceBounceStrategy"
+    "SupportResistanceBounceStrategy",
+    "BacktestStrategy"
 ]
