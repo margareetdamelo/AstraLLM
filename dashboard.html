@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASTER Trading Bot Dashboard</title>
+    <title>Trading Bot Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -335,6 +335,36 @@
             color: #848E9C;
             font-size: 13px;
             padding: 0 10px;
+        }
+
+        .trades-legend {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(240, 185, 11, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(240, 185, 11, 0.2);
+        }
+
+        .legend-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #F0B90B;
+            margin-bottom: 10px;
+        }
+
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 8px;
+        }
+
+        .legend-item {
+            font-size: 12px;
+            color: #848E9C;
+        }
+
+        .legend-item strong {
+            color: #EAECEF;
         }
 
         .card-title {
@@ -1273,7 +1303,7 @@
             <div class="status-box" id="statusBox">
                 <span class="status-badge status-running">● Running</span>
             </div>
-            <h1>ASTER Trading Bot</h1>
+            <h1>Trading Bot</h1>
             <div class="timestamp" id="timestamp">Loading...</div>
         </header>
 
@@ -1871,6 +1901,28 @@
                         <span>${currentPage} / ${totalPages} (${allTrades.length}条)</span>
                         <button onclick="window.tradesCurrentPage=Math.min(${totalPages},currentPage+1);updateDashboard();" ${currentPage === totalPages ? 'disabled' : ''}>»</button>
                         <button onclick="window.tradesCurrentPage=${totalPages};updateDashboard();" ${currentPage === totalPages ? 'disabled' : ''}>»»</button>
+                    </div>
+                    <div class="trades-legend">
+                        <div class="legend-title">📖 指标说明</div>
+                        <div class="legend-grid">
+                            <div class="legend-item"><strong>Symbol</strong> - 交易品种</div>
+                            <div class="legend-item"><strong>Side</strong> - 交易方向(多/空 & 杠杆)</div>
+                            <div class="legend-item"><strong>Entry Time</strong> - 开仓时间</div>
+                            <div class="legend-item"><strong>Entry → Exit</strong> - 入场价 → 出场价</div>
+                            <div class="legend-item"><strong>Qty</strong> - 数量(币数)</div>
+                            <div class="legend-item"><strong>Value</strong> - 仓位价值</div>
+                            <div class="legend-item"><strong>Commission</strong> - 手续费</div>
+                            <div class="legend-item"><strong>PnL</strong> - 盈亏(金额 & 百分比)</div>
+                            <div class="legend-item"><strong>Hold</strong> - 持仓时间</div>
+                            <div class="legend-item"><strong>Strategy</strong> - 策略名称</div>
+                            <div class="legend-item"><strong>RSI</strong> - 相对强弱指数</div>
+                            <div class="legend-item"><strong>Volume</strong> - 成交量比</div>
+                            <div class="legend-item"><strong>ATR</strong> - 平均真实波幅</div>
+                            <div class="legend-item"><strong>Trend</strong> - 趋势方向</div>
+                            <div class="legend-item"><strong>Breakout</strong> - 是否突破</div>
+                            <div class="legend-item"><strong>Conf</strong> - 信号置信度</div>
+                            <div class="legend-item"><strong>Exit Time</strong> - 平仓时间</div>
+                        </div>
                     </div>
                 `;
             }
