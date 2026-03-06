@@ -124,7 +124,6 @@ def simulate_market_updates():
 
         # Simulate new trade sometimes
         if random.random() < 0.15:  # 15% chance
-            is_win = random.random() < 0.62  # 62% win rate
             
             symbol = random.choice(symbols)
             if symbol == "BTCUSDT":
@@ -135,6 +134,8 @@ def simulate_market_updates():
                 base_price = random.uniform(95, 110)
             
             leverage = random.choice([5, 10, 15, 20])
+            side = random.choice(["LONG", "SHORT"])
+            is_win = random.random() < 0.6
             
             if is_win:
                 pnl_percentage = random.uniform(1, 5)  # 1-5%
@@ -142,18 +143,22 @@ def simulate_market_updates():
                 pnl_percentage = random.uniform(-5, -1)  # -1 to -5%
             
             entry_price = base_price
-            # 根据PnL百分比计算出场价格
-            if is_win:
+            # 根据多空方向和盈亏计算出场价格
+            # LONG: 盈利=价格上涨, 亏损=价格下跌
+            # SHORT: 盈利=价格下跌, 亏损=价格上涨
+            if side == "LONG":
+                # 多单
                 exit_price = entry_price * (1 + pnl_percentage / 100)
             else:
-                exit_price = entry_price * (1 + pnl_percentage / 100)
+                # 空单: pnl%正=盈利(价格跌), pnl%负=亏损(价格涨)
+                exit_price = entry_price * (1 - pnl_percentage / 100)
             
             quantity = random.uniform(0.01, 0.1)
             # Position Value = 价格 × 数量（不乘杠杆）
             position_value = entry_price * quantity
             # PnL = Position Value × PnL百分比
             pnl = position_value * pnl_percentage / 100
-            pnl_percentage = pnl_percentage  # 保持原来的百分比
+            pnl_percentage = pnl_percentage
             
             hold_seconds = random.randint(60, 3600)
             
@@ -171,7 +176,7 @@ def simulate_market_updates():
 
             trade = {
                 "symbol": symbol,
-                "side": random.choice(["LONG", "SHORT"]),
+                "side": side,
                 "entry_price": round(entry_price, 2),
                 "exit_price": round(exit_price, 2),
                 "quantity": round(quantity, 4),
@@ -531,8 +536,24 @@ def main():
 
     # Add some initial trades
     for i in range(5):
+        side = random.choice(["LONG", "SHORT"])
         is_win = random.random() < 0.6
-        pnl = random.uniform(30, 120) if is_win else random.uniform(-80, -20)
+        
+        if is_win:
+            pnl_percentage = random.uniform(1, 5)
+        else:
+            pnl_percentage = random.uniform(-5, -1)
+        
+        entry_price = round(random.uniform(48000, 52000), 2)
+        quantity = round(random.uniform(0.01, 0.05), 4)
+        position_value = entry_price * quantity
+        pnl = position_value * pnl_percentage / 100
+        
+        # 根据多空方向计算出场价格
+        if side == "LONG":
+            exit_price = round(entry_price * (1 + pnl_percentage / 100), 2)
+        else:
+            exit_price = round(entry_price * (1 - pnl_percentage / 100), 2)
 
         demo_state["total_trades"] += 1
         if is_win:
@@ -545,9 +566,10 @@ def main():
 
         trade = {
             "symbol": "BTCUSDT",
-            "side": random.choice(["LONG", "SHORT"]),
-            "entry_price": round(random.uniform(48000, 52000), 2),
-            "quantity": round(random.uniform(0.01, 0.05), 4),
+            "side": side,
+            "entry_price": entry_price,
+            "exit_price": exit_price,
+            "quantity": quantity,
             "pnl": round(pnl, 2),
         }
         trade["position_value"] = trade["entry_price"] * trade["quantity"]
