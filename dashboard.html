@@ -302,6 +302,41 @@
             color: #F6465D;
         }
 
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            padding: 10px 0;
+        }
+
+        .pagination button {
+            background: #2B3139;
+            border: 1px solid #3C4049;
+            color: #EAECEF;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: #F0B90B;
+            color: #000;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .pagination span {
+            color: #848E9C;
+            font-size: 13px;
+            padding: 0 10px;
+        }
+
         .card-title {
             font-size: 16px;
             font-weight: 700;
@@ -1751,7 +1786,10 @@
 
             html += `</div>`;
 
-            // Recent Trades - 表格形式
+            // Recent Trades - 表格形式（带分页）
+            const TRADES_PER_PAGE = 20;
+            let currentPage = window.tradesCurrentPage || 1;
+            
             html += `
                 <div class="card">
                     <div class="card-title">📜 Recent Trades</div>
@@ -1760,6 +1798,12 @@
             if (data.recent_trades.length === 0) {
                 html += `<p style="text-align: center; opacity: 0.7;">No recent trades</p>`;
             } else {
+                const allTrades = data.recent_trades.slice().reverse();
+                const totalPages = Math.ceil(allTrades.length / TRADES_PER_PAGE);
+                const startIdx = (currentPage - 1) * TRADES_PER_PAGE;
+                const endIdx = Math.min(startIdx + TRADES_PER_PAGE, allTrades.length);
+                const pageTrades = allTrades.slice(startIdx, endIdx);
+                
                 html += `
                     <table class="trades-table">
                         <thead>
@@ -1786,7 +1830,7 @@
                         <tbody>
                 `;
                 
-                data.recent_trades.reverse().forEach(trade => {
+                pageTrades.forEach(trade => {
                     const pnlClass = trade.pnl >= 0 ? 'positive' : 'negative';
                     const holdTime = trade.hold_duration_seconds ? 
                         (trade.hold_duration_seconds < 60 ? trade.hold_duration_seconds + 's' : 
@@ -1821,6 +1865,13 @@
                 html += `
                         </tbody>
                     </table>
+                    <div class="pagination">
+                        <button onclick="window.tradesCurrentPage=1;updateDashboard();" ${currentPage === 1 ? 'disabled' : ''}>««</button>
+                        <button onclick="window.tradesCurrentPage=Math.max(1,currentPage-1);updateDashboard();" ${currentPage === 1 ? 'disabled' : ''}>«</button>
+                        <span>${currentPage} / ${totalPages} (${allTrades.length}条)</span>
+                        <button onclick="window.tradesCurrentPage=Math.min(${totalPages},currentPage+1);updateDashboard();" ${currentPage === totalPages ? 'disabled' : ''}>»</button>
+                        <button onclick="window.tradesCurrentPage=${totalPages};updateDashboard();" ${currentPage === totalPages ? 'disabled' : ''}>»»</button>
+                    </div>
                 `;
             }
 
