@@ -1709,7 +1709,7 @@
 
             html += `</div>`;
 
-            // Recent Trades
+            // Recent Trades - 列表形式
             html += `
                 <div class="card">
                     <div class="card-title">📜 Recent Trades</div>
@@ -1724,6 +1724,8 @@
                         (trade.hold_duration_seconds < 60 ? trade.hold_duration_seconds + 's' : 
                          Math.floor(trade.hold_duration_seconds / 60) + 'm') : '-';
                     
+                    const entryTime = trade.entry_time ? new Date(trade.entry_time).toLocaleString('en-US') : '-';
+                    
                     html += `
                         <div class="trade">
                             <div class="trade-header">
@@ -1732,69 +1734,14 @@
                                     ${trade.side} ${trade.leverage ? trade.leverage + 'x' : '-'}
                                 </span>
                             </div>
-                            <div class="trade-details">
-                                <div class="trade-row">
-                                    <span>Entry Time (入场时间):</span>
-                                    <span>${trade.entry_time ? new Date(trade.entry_time).toLocaleString('en-US') : '-'}</span>
-                                </div>
-                                <div class="trade-row">
-                                    <span>Entry → Exit (入场 → 出场):</span>
-                                    <span>${formatCurrency(trade.entry_price)} → ${formatCurrency(trade.exit_price)}</span>
-                                </div>
-                                <div class="trade-row">
-                                    <span>Quantity (数量):</span>
-                                    <span>${trade.quantity !== undefined ? trade.quantity : '-'}</span>
-                                </div>
-                                <div class="trade-row">
-                                    <span>Position Value (仓位价值):</span>
-                                    <span>${trade.position_value !== undefined ? formatCurrency(trade.position_value) : '-'}</span>
-                                </div>
-                                <div class="trade-row">
-                                    <span>Commission (手续费):</span>
-                                    <span>${trade.commission !== undefined ? formatCurrency(trade.commission) : '-'}</span>
-                                </div>
-                                <div class="trade-row">
-                                    <span>Hold Time (持仓时间):</span>
-                                    <span>${holdTime !== 'undefined' ? holdTime : '-'}</span>
-                                </div>
-                                <div class="trade-row pnl-row">
-                                    <span>PnL (盈亏):</span>
-                                    <span class="${pnlClass}">${trade.pnl >= 0 ? '+' : ''}${formatCurrency(trade.pnl)} (${trade.pnl >= 0 ? '+' : ''}${formatPercentage(trade.pnl_percentage || 0)})</span>
-                                </div>
-                                <div class="trade-row">
-                                    <span>Strategy (策略):</span>
-                                    <span>${trade.strategy || '-'}</span>
-                                </div>
-                                <div class="trade-row">
-                                    <span>RSI (相对强弱指数):</span>
-                                    <span>${trade.entry_conditions?.rsi || '-'}</span>
-                                </div>
-                                <div class="trade-row">
-                                    <span>Volume Ratio (成交量比):</span>
-                                    <span>${trade.entry_conditions?.volume_ratio ? trade.entry_conditions.volume_ratio + 'x' : '-'}</span>
-                                </div>
-                                <div class="trade-row">
-                                    <span>ATR % (平均真实波幅):</span>
-                                    <span>${trade.entry_conditions?.atr ? trade.entry_conditions.atr + '%' : '-'}</span>
-                                </div>
-                                <div class="trade-row">
-                                    <span>Trend (趋势):</span>
-                                    <span>${trade.entry_conditions?.trend || '-'}</span>
-                                </div>
-                                <div class="trade-row">
-                                    <span>Breakout (突破):</span>
-                                    <span>${trade.entry_conditions?.breakout === true ? '✓ Yes' : trade.entry_conditions?.breakout === false ? '✗ No' : '-'}</span>
-                                </div>
-                                <div class="trade-row">
-                                    <span>Confidence (置信度):</span>
-                                    <span>${trade.entry_conditions?.signal_confidence ? (trade.entry_conditions.signal_confidence * 100).toFixed(0) + '%' : '-'}</span>
-                                </div>
-                                <div class="trade-row">
-                                    <span>Exit Time (出场时间):</span>
-                                    <span>${trade.exit_time ? new Date(trade.exit_time).toLocaleString('en-US') : '-'}</span>
-                                </div>
+                            <div>
+                                ${entryTime} | ${formatCurrency(trade.entry_price)} → ${formatCurrency(trade.exit_price)} | 
+                                Qty: ${trade.quantity !== undefined ? trade.quantity : '-'} | 
+                                <span class="${pnlClass}">${trade.pnl >= 0 ? '+' : ''}${formatCurrency(trade.pnl)} (${trade.pnl >= 0 ? '+' : ''}${formatPercentage(trade.pnl_percentage || 0)})</span> | 
+                                ${holdTime}
                             </div>
-                        </div>`;
+                        </div>
+                    `;
                 });
             }
 
