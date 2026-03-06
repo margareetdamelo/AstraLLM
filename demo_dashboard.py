@@ -326,7 +326,7 @@ async def login(request: Request):
             
             password_hash = hashlib.sha256(password.encode()).hexdigest()
             
-            if username == "admin" and password_hash == "5e884898da28047d9164a77dd3e7f5c64a8e6a4a9c6e7b5a3c8d9e0f1a2b3c":  # admin的hash
+            if username == "admin" and password_hash == "2b558bcd816cc30918215b8cf4ce026d9a2da0cc82414af105a9e0f1303e7626":  # [:WDy$W*D-RzTQ%
                 token = secrets.token_hex(32)
                 sessions[token] = datetime.now() + timedelta(hours=24)
                 return {"success": True, "token": token, "type": "password"}
