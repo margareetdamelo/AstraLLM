@@ -227,7 +227,8 @@ def simulate_market_updates():
                 "stop_loss": 0,
                 "take_profit": 0,
                 "liquidation_price": 0,
-                "strategy": demo_state["selected_strategy"]
+                "strategy": demo_state["selected_strategy"],
+                "entry_time": datetime.now().isoformat()
             }
             
             # 计算未实现盈亏
@@ -483,7 +484,20 @@ async def get_closed_positions(request: Request, limit: int = 200):
         return JSONResponse(status_code=401, content={"error": "Unauthorized"})
     
     trades = demo_state["recent_trades"][:limit]
-    return {"trades": trades, "total": len(trades)}
+    # 转换为前端期望的格式
+    closed_positions = []
+    for trade in trades:
+        closed_positions.append({
+            "symbol": trade.get("symbol", "BTCUSDT"),
+            "side": "BUY" if trade.get("side") == "LONG" else "SELL",
+            "price": trade.get("entry_price", 0),
+            "quantity": trade.get("quantity", 0),
+            "realized_pnl": trade.get("pnl", 0),
+            "time": trade.get("exit_time", trade.get("entry_time", "")),
+            "commission": trade.get("commission", 0)
+        })
+    
+    return {"closed_positions": closed_positions, "count": len(closed_positions)}
 
 
 def main():
