@@ -1850,7 +1850,7 @@
                                     <span><strong>Current:</strong> ${formatCurrency(pos.current_price)}</span>
                                 </div>
                                 <div class="pos-detail-row">
-                                    <span><strong>Quantity (数量):</strong> ${formatNumber(pos.quantity, 4)}</span>
+                                    <span><strong>Quantity (数量/张数):</strong> ${formatNumber(pos.quantity, 4)}</span>
                                     <span><strong>Position Value (仓位价值):</strong> ${formatCurrency(pos.position_value || pos.entry_price * pos.quantity)}</span>
                                 </div>
                                 <div class="pos-detail-row">
@@ -1899,7 +1899,7 @@
                                 <th>Side</th>
                                 <th>Entry Time</th>
                                 <th>Entry → Exit</th>
-                                <th>Qty</th>
+                                <th>Qty (数量/张数)</th>
                                 <th>Value</th>
                                 <th>Commission</th>
                                 <th>PnL</th>
@@ -1966,7 +1966,7 @@
                             <div class="legend-item"><strong>Side</strong> - 交易方向(多/空 & 杠杆)</div>
                             <div class="legend-item"><strong>Entry Time</strong> - 开仓时间</div>
                             <div class="legend-item"><strong>Entry → Exit</strong> - 入场价 → 出场价</div>
-                            <div class="legend-item"><strong>Qty</strong> - 数量(币数)</div>
+                            <div class="legend-item"><strong>Qty</strong> - 数量/张数(币数)</div>
                             <div class="legend-item"><strong>Value</strong> - 仓位价值</div>
                             <div class="legend-item"><strong>Commission</strong> - 手续费</div>
                             <div class="legend-item"><strong>PnL</strong> - 盈亏(金额 & 百分比)</div>
