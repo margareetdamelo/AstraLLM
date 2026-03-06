@@ -267,6 +267,9 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
         }
 
         .trades-table th,
@@ -1766,8 +1769,18 @@
                                 <th>Entry Time</th>
                                 <th>Entry → Exit</th>
                                 <th>Qty</th>
+                                <th>Value</th>
+                                <th>Commission</th>
                                 <th>PnL</th>
                                 <th>Hold</th>
+                                <th>Strategy</th>
+                                <th>RSI</th>
+                                <th>Volume</th>
+                                <th>ATR</th>
+                                <th>Trend</th>
+                                <th>Breakout</th>
+                                <th>Conf</th>
+                                <th>Exit Time</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1780,6 +1793,7 @@
                          Math.floor(trade.hold_duration_seconds / 60) + 'm') : '-';
                     
                     const entryTime = trade.entry_time ? new Date(trade.entry_time).toLocaleString('en-US') : '-';
+                    const exitTime = trade.exit_time ? new Date(trade.exit_time).toLocaleString('en-US') : '-';
                     
                     html += `
                         <tr>
@@ -1788,8 +1802,18 @@
                             <td>${entryTime}</td>
                             <td>${formatCurrency(trade.entry_price)} → ${formatCurrency(trade.exit_price)}</td>
                             <td>${trade.quantity !== undefined ? trade.quantity : '-'}</td>
+                            <td>${trade.position_value !== undefined ? formatCurrency(trade.position_value) : '-'}</td>
+                            <td>${trade.commission !== undefined ? formatCurrency(trade.commission) : '-'}</td>
                             <td class="${pnlClass}">${trade.pnl >= 0 ? '+' : ''}${formatCurrency(trade.pnl)} (${trade.pnl >= 0 ? '+' : ''}${formatPercentage(trade.pnl_percentage || 0)})</td>
                             <td>${holdTime}</td>
+                            <td>${trade.strategy || '-'}</td>
+                            <td>${trade.entry_conditions?.rsi || '-'}</td>
+                            <td>${trade.entry_conditions?.volume_ratio ? trade.entry_conditions.volume_ratio + 'x' : '-'}</td>
+                            <td>${trade.entry_conditions?.atr ? trade.entry_conditions.atr + '%' : '-'}</td>
+                            <td>${trade.entry_conditions?.trend || '-'}</td>
+                            <td>${trade.entry_conditions?.breakout === true ? '✓' : trade.entry_conditions?.breakout === false ? '✗' : '-'}</td>
+                            <td>${trade.entry_conditions?.signal_confidence ? (trade.entry_conditions.signal_confidence * 100).toFixed(0) + '%' : '-'}</td>
+                            <td>${exitTime}</td>
                         </tr>
                     `;
                 });
