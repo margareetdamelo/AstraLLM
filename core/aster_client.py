@@ -278,6 +278,9 @@ class AsterFuturesClient:
         return self._request("GET", "/fapi/v1/fundingRate", params=params)
 
     # Trading Endpoints
+    # Minimum quantity for U-M futures (1 contract = 0.001 BTC for BTCUSDT)
+    MIN_QUANTITY = 0.001
+    
     def create_order(self, symbol: str, side: str, order_type: str,
                      quantity: float, price: Optional[float] = None,
                      leverage: Optional[int] = None,
@@ -286,9 +289,20 @@ class AsterFuturesClient:
                      reduce_only: bool = False,
                      close_position: bool = False) -> Dict:
         """Create a new order"""
+        # Validate minimum quantity
+        if quantity < self.MIN_QUANTITY:
+            logger.warning(f"Quantity {quantity} is below minimum {self.MIN_QUANTITY}, skipping order")
+            return {"success": False, "code": -1000, "msg": f"Quantity below minimum {self.MIN_QUANTITY}"}
+        
         # Round quantity based on symbol precision from exchange info
         precision = self.symbol_precision.get(symbol, 4)  # Default to 4 if not found
         quantity = round(quantity, precision)
+        
+        # Ensure quantity is still above minimum after rounding
+        if quantity < self.MIN_QUANTITY:
+            logger.warning(f"Quantity {quantity} after rounding is below minimum {self.MIN_QUANTITY}, skipping order")
+            return {"success": False, "code": -1000, "msg": f"Quantity below minimum {self.MIN_QUANTITY}"}
+        
         logger.debug(f"Rounded quantity for {symbol} to {quantity} ({precision} decimals)")
 
         params = {

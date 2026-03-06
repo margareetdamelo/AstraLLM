@@ -1934,7 +1934,7 @@
                             <td>${entryTime}</td>
                             <td>${formatCurrency(trade.entry_price)} → ${formatCurrency(trade.exit_price)}</td>
                             <td>${trade.quantity !== undefined ? trade.quantity : '-'}</td>
-                            <td>${trade.quantity !== undefined ? Math.floor(trade.quantity * 10000) : '-'}</td>
+                            <td>${trade.quantity !== undefined ? Math.floor(trade.quantity * 1000) : '-'}</td>
                             <td>${trade.position_value !== undefined ? formatCurrency(trade.position_value) : '-'}</td>
                             <td>${trade.commission !== undefined ? formatCurrency(trade.commission) : '-'}</td>
                             <td class="${pnlClass}">${trade.pnl >= 0 ? '+' : ''}${formatCurrency(trade.pnl)} (${trade.pnl >= 0 ? '+' : ''}${formatPercentage(trade.pnl_percentage || 0)})</td>

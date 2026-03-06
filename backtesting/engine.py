@@ -202,7 +202,8 @@ class BacktestEngine:
 
                     logger.info(f"Signal: action={signal.get('action')}, entry={entry_price}, stop={stop_loss}, qty={quantity:.6f}, bal={self.order_simulator.balance:.2f}")
 
-                    if quantity > 0.0001:
+                    # Minimum quantity for U-M futures (1 contract = 0.001 BTC = 1 张)
+                    if quantity >= 0.001:
                         position_side = PositionSide.LONG if side == "LONG" else PositionSide.SHORT
 
                         logger.info(f"Opening position: {position_side.value} {quantity} @ {slippage_price}")
