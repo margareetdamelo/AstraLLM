@@ -545,15 +545,17 @@ def main():
         trade = {
             "symbol": "BTCUSDT",
             "side": random.choice(["LONG", "SHORT"]),
-            "entry_price": random.uniform(48000, 52000),
-            "exit_price": 0,
-            "pnl": pnl,
-            "pnl_percentage": (pnl / 10000) * 100,
-            "strategy": random.choice(["Breakout Scalping", "Momentum Reversal", "Market Making"]),
-            "entry_time": datetime.now().isoformat(),
-            "exit_time": datetime.now().isoformat()
+            "entry_price": round(random.uniform(48000, 52000), 2),
+            "quantity": round(random.uniform(0.01, 0.05), 4),
+            "pnl": round(pnl, 2),
         }
-        trade["exit_price"] = trade["entry_price"] * (1 + trade["pnl_percentage"]/100)
+        trade["position_value"] = trade["entry_price"] * trade["quantity"]
+        trade["pnl_percentage"] = round((trade["pnl"] / trade["position_value"] * 100) if trade["position_value"] > 0 else 0, 2)
+        trade["exit_price"] = round(trade["entry_price"] * (1 + trade["pnl_percentage"]/100), 2)
+        trade["strategy"] = random.choice(["Breakout Scalping", "Momentum Reversal", "Market Making"])
+        trade["entry_time"] = datetime.now().isoformat()
+        trade["exit_time"] = datetime.now().isoformat()
+        trade["commission"] = round(trade["position_value"] * 0.001, 2)
         demo_state["recent_trades"].append(trade)
 
     demo_state["current_capital"] = demo_state["initial_capital"] + demo_state["total_pnl"]
