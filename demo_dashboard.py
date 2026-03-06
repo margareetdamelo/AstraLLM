@@ -235,12 +235,13 @@ def simulate_market_updates():
                 "entry_time": datetime.now().isoformat()
             }
             
-            # 计算未实现盈亏
-            pnl_per_price = quantity * leverage
+            # 计算未实现盈亏（不乘杠杆）
+            # PnL = (当前价 - 入场价) × 数量
+            pnl_per_unit = quantity
             if side == "LONG":
-                pos["unrealized_pnl"] = round((pos["current_price"] - pos["entry_price"]) * pnl_per_price, 2)
+                pos["unrealized_pnl"] = round((pos["current_price"] - pos["entry_price"]) * pnl_per_unit, 2)
             else:
-                pos["unrealized_pnl"] = round((pos["entry_price"] - pos["current_price"]) * pnl_per_price, 2)
+                pos["unrealized_pnl"] = round((pos["entry_price"] - pos["current_price"]) * pnl_per_unit, 2)
             
             # 设置止损止盈（方向正确）
             if side == "LONG":
@@ -272,11 +273,11 @@ def simulate_market_updates():
             price_change = random.uniform(0.998, 1.002)
             pos["current_price"] = pos["current_price"] * price_change
             
-            pnl_per_price = pos["quantity"] * pos["leverage"]
+            # 不乘杠杆
             if pos["side"] == "LONG":
-                pos["unrealized_pnl"] = round((pos["current_price"] - pos["entry_price"]) * pnl_per_price, 2)
+                pos["unrealized_pnl"] = round((pos["current_price"] - pos["entry_price"]) * pos["quantity"], 2)
             else:
-                pos["unrealized_pnl"] = round((pos["entry_price"] - pos["current_price"]) * pnl_per_price, 2)
+                pos["unrealized_pnl"] = round((pos["entry_price"] - pos["current_price"]) * pos["quantity"], 2)
 
 
 def verify_token(request: Request):
