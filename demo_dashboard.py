@@ -354,10 +354,11 @@ async def get_login_qr():
         return {
             "success": True,
             "type": "feishu",
-            "qrcode_url": qr_data["qrcode_url"],
-            "auth_url": qr_data["auth_url"],
-            "state": qr_data["state"],
-            "expires_in": qr_data["expires_in"]
+            "qrcode_url": qr_data.get("qrcode_url"),
+            "login_page_url": qr_data.get("login_page_url") or qr_data.get("auth_url"),
+            "auth_url": qr_data.get("auth_url"),
+            "state": qr_data.get("state"),
+            "expires_in": qr_data.get("expires_in")
         }
     except Exception as e:
         return {"success": False, "message": str(e)}
