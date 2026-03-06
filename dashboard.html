@@ -1349,7 +1349,36 @@
         // 自动加载lark登录按钮
         window.addEventListener('DOMContentLoaded', function() {
             if (document.getElementById('larkLogin')) {
-                showFeishuLoginButton();
+                // 检测是否在Lark/飞书内置浏览器中
+                const userAgent = navigator.userAgent || '';
+                const isInLark = /Lark|Feishu|lark|feishu/i.test(userAgent);
+                
+                if (isInLark) {
+                    // 在Lark中打开，尝试自动登录
+                    document.getElementById('qrcodeContainer').innerHTML = '<div class="qrcode-loading">正在自动登录...</div>';
+                    // 获取URL中的code参数进行自动登录
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const code = urlParams.get('code');
+                    if (code) {
+                        // 已有code，自动登录
+                        fetch('/api/login', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({type: 'feishu', code: code})
+                        }).then(r => r.json()).then(data => {
+                            if (data.success) {
+                                localStorage.setItem('authToken', data.token);
+                                location.reload();
+                            }
+                        });
+                    } else {
+                        // 触发OAuth授权
+                        showFeishuLoginButton();
+                    }
+                } else {
+                    // 在浏览器中打开，显示扫码登录
+                    showFeishuLoginButton();
+                }
             }
         });
 
