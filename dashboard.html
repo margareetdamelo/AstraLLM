@@ -1346,6 +1346,13 @@
             document.getElementById('larkLogin').style.display = 'none';
         }
 
+        // 自动加载lark登录按钮
+        window.addEventListener('DOMContentLoaded', function() {
+            if (document.getElementById('larkLogin')) {
+                showFeishuLoginButton();
+            }
+        });
+
         async function initLogin() {
             // 直接跳转到lark授权页面
             const state = Math.random().toString(36).substring(2);
@@ -1411,6 +1418,7 @@
         function showFeishuLogin() {
             document.getElementById('larkLogin').style.display = 'block';
             document.getElementById('passwordLogin').style.display = 'none';
+            showFeishuLoginButton();
         }
 
         function showPasswordLogin() {
