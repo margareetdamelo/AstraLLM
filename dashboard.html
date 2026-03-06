@@ -1734,6 +1734,10 @@
                             </div>
                             <div class="trade-details">
                                 <div class="trade-row">
+                                    <span>Entry Time (入场时间):</span>
+                                    <span>${trade.entry_time ? new Date(trade.entry_time).toLocaleString('en-US') : '-'}</span>
+                                </div>
+                                <div class="trade-row">
                                     <span>Entry → Exit (入场 → 出场):</span>
                                     <span>${formatCurrency(trade.entry_price)} → ${formatCurrency(trade.exit_price)}</span>
                                 </div>
