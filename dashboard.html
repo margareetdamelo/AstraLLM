@@ -1364,23 +1364,29 @@
 
         function showFeishuLoginButton() {
             const container = document.getElementById('qrcodeContainer');
-            const state = Math.random().toString(36).substring(2);
-            const appId = 'cli_a923ab78f1625e1b';
-            const redirectUri = encodeURIComponent('https://quant-astrallm.goldwarts.com/auth/lark/callback');
-            const loginUrl = `https://open.larksuite.com/open-apis/authen/v1/authorize?app_id=${appId}&redirect_uri=${redirectUri}&state=${state}`;
+            container.innerHTML = '<div class="qrcode-loading">加载中...</div>';
             
-            container.innerHTML = `
-                <div style="text-align: center;">
-                    <p style="color: #333; font-size: 14px; margin-bottom: 15px;">点击下方按钮使用lark账号登录</p>
-                    <a href="${loginUrl}" target="_blank" style="display: inline-block; padding: 15px 30px; background: #0066FF; color: white; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: 600;">
-                        lark扫码登录
-                    </a>
-                    <p style="color: #666; font-size: 12px; margin-top: 15px;">将在新窗口打开lark授权页面</p>
-                </div>
-            `;
-            
-            document.getElementById('loginStatus').textContent = '点击上方按钮跳转lark登录';
-            document.getElementById('loginStatus').className = 'login-status waiting';
+            fetch('/api/login/qr')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        container.innerHTML = `
+                            <div style="text-align: center;">
+                                <p style="color: #333; font-size: 14px; margin-bottom: 15px;">点击下方按钮使用lark账号登录</p>
+                                <a href="${data.login_page_url}" target="_blank" style="display: inline-block; padding: 15px 30px; background: #0066FF; color: white; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: 600;">
+                                    lark扫码登录
+                                </a>
+                                <p style="color: #666; font-size: 12px; margin-top: 15px;">将在新窗口打开lark授权页面</p>
+                            </div>
+                        `;
+                        document.getElementById('loginStatus').textContent = '点击上方按钮跳转lark登录';
+                    } else {
+                        container.innerHTML = '<div class="qrcode-loading" style="color: red;">加载失败: ' + (data.message || '未知错误') + '</div>';
+                    }
+                })
+                .catch(err => {
+                    container.innerHTML = '<div class="qrcode-loading" style="color: red;">加载失败</div>';
+                });
         }
 
         async function refreshQRCode() {
