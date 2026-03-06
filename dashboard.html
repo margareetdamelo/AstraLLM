@@ -1686,15 +1686,15 @@
                                     <span><strong>Current:</strong> ${formatCurrency(pos.current_price)}</span>
                                 </div>
                                 <div class="pos-detail-row">
-                                    <span><strong>Quantity:</strong> ${formatNumber(pos.quantity, 4)}</span>
-                                    <span><strong>Position Value:</strong> ${formatCurrency(pos.position_value || pos.entry_price * pos.quantity)}</span>
+                                    <span><strong>Quantity (数量):</strong> ${formatNumber(pos.quantity, 4)}</span>
+                                    <span><strong>Position Value (仓位价值):</strong> ${formatCurrency(pos.position_value || pos.entry_price * pos.quantity)}</span>
                                 </div>
                                 <div class="pos-detail-row">
-                                    <span><strong>Stop Loss:</strong> ${formatCurrency(pos.stop_loss)}</span>
-                                    <span><strong>Take Profit:</strong> ${formatCurrency(pos.take_profit)}</span>
+                                    <span><strong>Stop Loss (止损):</strong> ${formatCurrency(pos.stop_loss)}</span>
+                                    <span><strong>Take Profit (止盈):</strong> ${formatCurrency(pos.take_profit)}</span>
                                 </div>
                                 <div class="pos-detail-row">
-                                    <span><strong>Liquidation:</strong> ${formatCurrency(pos.liquidation_price)}</span>
+                                    <span><strong>Liquidation (清算价):</strong> ${formatCurrency(pos.liquidation_price)}</span>
                                     <span style="color: ${priceDiff < 15 ? '#F6465D' : '#848E9C'};">
                                         ${formatNumber(priceDiff, 1)}% away
                                     </span>
@@ -1734,59 +1734,59 @@
                             </div>
                             <div class="trade-details">
                                 <div class="trade-row">
-                                    <span>Entry → Exit:</span>
+                                    <span>Entry → Exit (入场 → 出场):</span>
                                     <span>${formatCurrency(trade.entry_price)} → ${formatCurrency(trade.exit_price)}</span>
                                 </div>
                                 <div class="trade-row">
-                                    <span>Quantity:</span>
+                                    <span>Quantity (数量):</span>
                                     <span>${trade.quantity !== undefined ? trade.quantity : '-'}</span>
                                 </div>
                                 <div class="trade-row">
-                                    <span>Position Value:</span>
+                                    <span>Position Value (仓位价值):</span>
                                     <span>${trade.position_value !== undefined ? formatCurrency(trade.position_value) : '-'}</span>
                                 </div>
                                 <div class="trade-row">
-                                    <span>Commission:</span>
+                                    <span>Commission (手续费):</span>
                                     <span>${trade.commission !== undefined ? formatCurrency(trade.commission) : '-'}</span>
                                 </div>
                                 <div class="trade-row">
-                                    <span>Hold Time:</span>
+                                    <span>Hold Time (持仓时间):</span>
                                     <span>${holdTime !== 'undefined' ? holdTime : '-'}</span>
                                 </div>
                                 <div class="trade-row pnl-row">
-                                    <span>PnL:</span>
+                                    <span>PnL (盈亏):</span>
                                     <span class="${pnlClass}">${trade.pnl >= 0 ? '+' : ''}${formatCurrency(trade.pnl)} (${trade.pnl >= 0 ? '+' : ''}${formatPercentage(trade.pnl_percentage || 0)})</span>
                                 </div>
                                 <div class="trade-row">
-                                    <span>Strategy:</span>
+                                    <span>Strategy (策略):</span>
                                     <span>${trade.strategy || '-'}</span>
                                 </div>
                                 <div class="trade-row">
-                                    <span>RSI:</span>
+                                    <span>RSI (相对强弱指数):</span>
                                     <span>${trade.entry_conditions?.rsi || '-'}</span>
                                 </div>
                                 <div class="trade-row">
-                                    <span>Volume Ratio:</span>
+                                    <span>Volume Ratio (成交量比):</span>
                                     <span>${trade.entry_conditions?.volume_ratio ? trade.entry_conditions.volume_ratio + 'x' : '-'}</span>
                                 </div>
                                 <div class="trade-row">
-                                    <span>ATR %:</span>
+                                    <span>ATR % (平均真实波幅):</span>
                                     <span>${trade.entry_conditions?.atr ? trade.entry_conditions.atr + '%' : '-'}</span>
                                 </div>
                                 <div class="trade-row">
-                                    <span>Trend:</span>
+                                    <span>Trend (趋势):</span>
                                     <span>${trade.entry_conditions?.trend || '-'}</span>
                                 </div>
                                 <div class="trade-row">
-                                    <span>Breakout:</span>
+                                    <span>Breakout (突破):</span>
                                     <span>${trade.entry_conditions?.breakout === true ? '✓ Yes' : trade.entry_conditions?.breakout === false ? '✗ No' : '-'}</span>
                                 </div>
                                 <div class="trade-row">
-                                    <span>Confidence:</span>
+                                    <span>Confidence (置信度):</span>
                                     <span>${trade.entry_conditions?.signal_confidence ? (trade.entry_conditions.signal_confidence * 100).toFixed(0) + '%' : '-'}</span>
                                 </div>
                                 <div class="trade-row">
-                                    <span>Exit Time:</span>
+                                    <span>Exit Time (出场时间):</span>
                                     <span>${trade.exit_time ? new Date(trade.exit_time).toLocaleString('en-US') : '-'}</span>
                                 </div>
                             </div>
