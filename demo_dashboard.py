@@ -137,19 +137,23 @@ def simulate_market_updates():
             leverage = random.choice([5, 10, 15, 20])
             
             if is_win:
-                pnl = random.uniform(30, 150)
+                pnl_percentage = random.uniform(1, 5)  # 1-5%
             else:
-                pnl = random.uniform(-100, -20)
+                pnl_percentage = random.uniform(-5, -1)  # -1 to -5%
             
             entry_price = base_price
+            # 根据PnL百分比计算出场价格
             if is_win:
-                exit_price = base_price * (1 + abs(pnl) / (base_price * leverage * 0.01))
+                exit_price = entry_price * (1 + pnl_percentage / 100)
             else:
-                exit_price = base_price * (1 - abs(pnl) / (base_price * leverage * 0.01))
+                exit_price = entry_price * (1 + pnl_percentage / 100)
             
             quantity = random.uniform(0.01, 0.1)
-            position_value = entry_price * quantity * leverage
-            pnl_percentage = (pnl / position_value) * 100
+            # Position Value = 价格 × 数量（不乘杠杆）
+            position_value = entry_price * quantity
+            # PnL = Position Value × PnL百分比
+            pnl = position_value * pnl_percentage / 100
+            pnl_percentage = pnl_percentage  # 保持原来的百分比
             
             hold_seconds = random.randint(60, 3600)
             
@@ -484,15 +488,25 @@ async def get_closed_positions(request: Request, limit: int = 200):
         return JSONResponse(status_code=401, content={"error": "Unauthorized"})
     
     trades = demo_state["recent_trades"][:limit]
-    # 转换为前端期望的格式
+    # 转换为前端期望的格式（不乘杠杆）
     closed_positions = []
     for trade in trades:
+        entry_price = trade.get("entry_price", 0)
+        quantity = trade.get("quantity", 0)
+        pnl = trade.get("pnl", 0)
+        
+        # Position Value = 价格 × 数量（不乘杠杆）
+        position_value = entry_price * quantity
+        # PnL % = PnL / Position Value × 100
+        pnl_percentage = (pnl / position_value * 100) if position_value > 0 else 0
+        
         closed_positions.append({
             "symbol": trade.get("symbol", "BTCUSDT"),
             "side": "BUY" if trade.get("side") == "LONG" else "SELL",
-            "price": trade.get("entry_price", 0),
-            "quantity": trade.get("quantity", 0),
-            "realized_pnl": trade.get("pnl", 0),
+            "price": entry_price,
+            "quantity": quantity,
+            "realized_pnl": pnl,
+            "pnl_percentage": round(pnl_percentage, 2),
             "time": trade.get("exit_time", trade.get("entry_time", "")),
             "commission": trade.get("commission", 0)
         })
