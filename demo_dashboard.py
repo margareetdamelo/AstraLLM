@@ -156,9 +156,10 @@ def simulate_market_updates():
             quantity = random.uniform(0.01, 0.1)
             # Position Value = 价格 × 数量（不乘杠杆）
             position_value = entry_price * quantity
-            # PnL = Position Value × PnL百分比
+            
+            # PnL计算统一公式：pnl = position_value * pnl_percentage / 100
+            # pnl_percentage > 0 = 盈利, pnl_percentage < 0 = 亏损
             pnl = position_value * pnl_percentage / 100
-            pnl_percentage = pnl_percentage
             
             hold_seconds = random.randint(60, 3600)
             
