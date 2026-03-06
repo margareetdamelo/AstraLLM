@@ -263,6 +263,42 @@
             border: 1px solid #2B3139;
         }
 
+        .trades-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .trades-table th,
+        .trades-table td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid #2B3139;
+        }
+
+        .trades-table th {
+            color: #848E9C;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .trades-table td {
+            color: #EAECEF;
+        }
+
+        .trades-table tbody tr:hover {
+            background: rgba(240, 185, 11, 0.05);
+        }
+
+        .trades-table .positive {
+            color: #0ECB81;
+        }
+
+        .trades-table .negative {
+            color: #F6465D;
+        }
+
         .card-title {
             font-size: 16px;
             font-weight: 700;
@@ -1709,7 +1745,7 @@
 
             html += `</div>`;
 
-            // Recent Trades - 列表形式
+            // Recent Trades - 表格形式
             html += `
                 <div class="card">
                     <div class="card-title">📜 Recent Trades</div>
@@ -1718,6 +1754,22 @@
             if (data.recent_trades.length === 0) {
                 html += `<p style="text-align: center; opacity: 0.7;">No recent trades</p>`;
             } else {
+                html += `
+                    <table class="trades-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Side</th>
+                                <th>Entry Time</th>
+                                <th>Entry → Exit</th>
+                                <th>Qty</th>
+                                <th>PnL</th>
+                                <th>Hold</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
                 data.recent_trades.reverse().forEach(trade => {
                     const pnlClass = trade.pnl >= 0 ? 'positive' : 'negative';
                     const holdTime = trade.hold_duration_seconds ? 
@@ -1727,22 +1779,22 @@
                     const entryTime = trade.entry_time ? new Date(trade.entry_time).toLocaleString('en-US') : '-';
                     
                     html += `
-                        <div class="trade">
-                            <div class="trade-header">
-                                <strong>${trade.symbol}</strong>
-                                <span class="position-side ${trade.side === 'LONG' ? 'side-long' : 'side-short'}">
-                                    ${trade.side} ${trade.leverage ? trade.leverage + 'x' : '-'}
-                                </span>
-                            </div>
-                            <div>
-                                ${entryTime} | ${formatCurrency(trade.entry_price)} → ${formatCurrency(trade.exit_price)} | 
-                                Qty: ${trade.quantity !== undefined ? trade.quantity : '-'} | 
-                                <span class="${pnlClass}">${trade.pnl >= 0 ? '+' : ''}${formatCurrency(trade.pnl)} (${trade.pnl >= 0 ? '+' : ''}${formatPercentage(trade.pnl_percentage || 0)})</span> | 
-                                ${holdTime}
-                            </div>
-                        </div>
+                        <tr>
+                            <td><strong>${trade.symbol}</strong></td>
+                            <td><span class="position-side ${trade.side === 'LONG' ? 'side-long' : 'side-short'}">${trade.side} ${trade.leverage ? trade.leverage + 'x' : '-'}</span></td>
+                            <td>${entryTime}</td>
+                            <td>${formatCurrency(trade.entry_price)} → ${formatCurrency(trade.exit_price)}</td>
+                            <td>${trade.quantity !== undefined ? trade.quantity : '-'}</td>
+                            <td class="${pnlClass}">${trade.pnl >= 0 ? '+' : ''}${formatCurrency(trade.pnl)} (${trade.pnl >= 0 ? '+' : ''}${formatPercentage(trade.pnl_percentage || 0)})</td>
+                            <td>${holdTime}</td>
+                        </tr>
                     `;
                 });
+                
+                html += `
+                        </tbody>
+                    </table>
+                `;
             }
 
             html += `</div>`;
